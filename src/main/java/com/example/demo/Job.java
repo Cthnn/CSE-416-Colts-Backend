@@ -1,17 +1,44 @@
 package com.example.demo;
 
 import org.json.simple.JSONObject;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Job {
-    public int jobId;
-    public BatchStatus status;
-    public Districting[] job;
-    public EthnicGroup eg;
-    public Job(int jobId, BatchStatus status, Districting[] job, EthnicGroup eg){
-        this.jobId = jobId;
-        this.status = status;
-        this.job = job;
+
+    @Id 
+    @GeneratedValue
+    private int jobId;
+    private BatchStatus status;
+    private Districting[] job;
+    private int runs;
+    private double populationDeviation;
+    private double compactness;
+    private EthnicGroup eg;
+
+    public Job() {
+        
+    }
+
+    public Job(int runs, double populationDeviation, double compactness, EthnicGroup eg){
+        this.status = BatchStatus.QUEUED;
+        this.runs = runs;
+        this.populationDeviation = populationDeviation;
+        this.compactness = compactness;
         this.eg = eg;
     }
+
+    public void printParams(){
+        System.out.println(this.jobId);
+        System.out.println(this.status.toString());
+        System.out.println(this.runs);
+        System.out.println(this.populationDeviation);
+        System.out.println(this.compactness);
+        System.out.println(this.eg.toString());
+    }
+
     public int getJobId(){
         return jobId;
     }
