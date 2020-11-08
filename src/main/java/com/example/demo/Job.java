@@ -4,6 +4,9 @@ import org.json.simple.JSONObject;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Job {
@@ -12,12 +15,14 @@ public class Job {
     @GeneratedValue
     private int jobId;
     private BatchStatus status;
-    private Districting[] job;
     private int runs;
     private double populationDeviation;
     private double compactness;
     private EthnicGroup eg;
 
+    @Transient
+    @JsonIgnore
+    private Districting[] job;
     public Job() {
         
     }
@@ -45,6 +50,16 @@ public class Job {
     public BatchStatus getStatus(){
         return status;
     }
+    public int getRuns(){
+        return runs;
+    }
+    public double getPopulationDeviation(){
+        return populationDeviation;
+    }
+    public double getCompactness(){
+        return compactness;
+    }
+    
     public Districting[] getJob(){
         return job;
     }
@@ -79,9 +94,9 @@ public class Job {
     private JSONObject generateGeoJson(Districting dist){
         return null;
     }
-    public JSONObject getPrecinctGeoJson(){
-        return null;
-    }
+    // public JSONObject getPrecinctGeoJson(){
+    //     return null;
+    // }
     public JSONObject generateSummaryFile(){
         return null;
     }

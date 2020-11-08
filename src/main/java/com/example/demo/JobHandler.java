@@ -1,5 +1,7 @@
 package com.example.demo;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,8 @@ public class JobHandler {
     private JobRepository repository;
 
     public ArrayList<Job> getHistory() {
-        return (ArrayList<Job>) repository.findAll();
+        ArrayList<Job> jobs = (ArrayList<Job>) repository.findAll();
+        return jobs;
     }
 
     public int createJob(JSONObject params) {
@@ -21,22 +24,35 @@ public class JobHandler {
             System.out.println("REPO is NULL");
             return 0;
         }
-        Job j = repository.save(new Job(10000, 0.5, 0.4, EthnicGroup.ASIAN));
-        //System.out.println(repository.findAll());
+        Job j = repository.save(new Job(((Number) params.get("plans")).intValue(), ((Number) params.get("pop")).doubleValue(), ((Number) params.get("comp")).doubleValue(), EthnicGroup.valueOf((String) params.get("group"))));
         return j.getJobId();
     }
 
     public void cancelJob(int jobId) {
-        // cancel the job
+        Optional<Job> job = repository.findById(jobId);
+        if(job.isPresent()){
+            Job j = job.get();
+            j.setStatus(BatchStatus.CANCELLED);
+            repository.save(j);
+        }else{
+            System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
+        }
     }
 
     public void deleteJob(int jobId) {
-        // delete the job
+        Optional<Job> job = repository.findById(jobId);
+        if(job.isPresent()){
+            Job j = job.get();
+            repository.delete(j);
+        }
+
+        // delete the job files on seawulf
     }
 
-    public JSONObject getStatuses(int[] jobIds) {
+    public ArrayList<Job> getStatuses(Integer[] jobIds) {
         // get statuses for specified jobs
-        return new JSONObject();
+        Iterable<Job> jobs = repository.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
+        return (ArrayList<Job>) jobs;
     }
 
     public void genSummary(int jobId, Precinct[] precincts) {
