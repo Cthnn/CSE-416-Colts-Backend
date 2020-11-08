@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.PersistenceClasses;
 
 import org.json.simple.JSONObject;
 import javax.persistence.Entity;
@@ -7,14 +7,14 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.example.demo.EnumClasses.*;
 @Entity
 public class Job {
 
     @Id 
     @GeneratedValue
     private int jobId;
-    private BatchStatus status;
+    private JobStatus status;
     private int runs;
     private double populationDeviation;
     private double compactness;
@@ -28,7 +28,7 @@ public class Job {
     }
 
     public Job(int runs, double populationDeviation, double compactness, EthnicGroup eg){
-        this.status = BatchStatus.QUEUED;
+        this.status = JobStatus.QUEUED;
         this.runs = runs;
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
@@ -47,7 +47,7 @@ public class Job {
     public int getJobId(){
         return jobId;
     }
-    public BatchStatus getStatus(){
+    public JobStatus getStatus(){
         return status;
     }
     public int getRuns(){
@@ -69,7 +69,7 @@ public class Job {
     public void setJobId(int jobId){
         this.jobId = jobId;
     }
-    public void setStatus(BatchStatus status){
+    public void setStatus(JobStatus status){
         this.status = status;
     }
     public void setJob(Districting[] job){
@@ -94,9 +94,9 @@ public class Job {
     private JSONObject generateGeoJson(Districting dist){
         return null;
     }
-    // public JSONObject getPrecinctGeoJson(){
-    //     return null;
-    // }
+    public JSONObject getPrecinctGeoJson(){
+        return null;
+    }
     public JSONObject generateSummaryFile(){
         return null;
     }

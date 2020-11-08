@@ -1,7 +1,7 @@
-package com.example.demo;
+package com.example.demo.PersistenceClasses;
 
 import java.util.ArrayList;
-
+import com.example.demo.EnumClasses.*;
 public class Districting {
     public int districtingId;
     public ArrayList<District> districts;

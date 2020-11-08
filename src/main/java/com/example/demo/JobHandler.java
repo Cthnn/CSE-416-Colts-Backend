@@ -6,7 +6,8 @@ import java.util.Optional;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.example.demo.PersistenceClasses.*;
+import com.example.demo.EnumClasses.*;
 @Service
 public class JobHandler {
     public ArrayList<Job> jobs = new ArrayList<Job>();
@@ -32,7 +33,7 @@ public class JobHandler {
         Optional<Job> job = repository.findById(jobId);
         if(job.isPresent()){
             Job j = job.get();
-            j.setStatus(BatchStatus.CANCELLED);
+            j.setStatus(JobStatus.CANCELLED);
             repository.save(j);
         }else{
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
@@ -55,7 +56,7 @@ public class JobHandler {
         return (ArrayList<Job>) jobs;
     }
 
-    public void genSummary(int jobId, Precinct[] precincts) {
+    public void genSummary(int jobId) {
         // gen summary
     }
 

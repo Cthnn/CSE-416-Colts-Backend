@@ -1,7 +1,7 @@
-package com.example.demo;
+package com.example.demo.PersistenceClasses;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
-
+import com.example.demo.EnumClasses.*;
 public class State {
     public String name;
     public ArrayList<District> districts;

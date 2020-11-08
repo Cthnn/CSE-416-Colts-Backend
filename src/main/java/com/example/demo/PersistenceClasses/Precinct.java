@@ -1,6 +1,7 @@
-package com.example.demo;
+package com.example.demo.PersistenceClasses;
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.example.demo.EnumClasses.*;
 public class Precinct {
     public int precinctId;
     public StateName state;
