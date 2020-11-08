@@ -15,6 +15,7 @@ public class Job {
     @GeneratedValue
     private int jobId;
     private JobStatus status;
+    private StateName state;
     private int runs;
     private double populationDeviation;
     private double compactness;
@@ -27,8 +28,9 @@ public class Job {
         
     }
 
-    public Job(int runs, double populationDeviation, double compactness, EthnicGroup eg){
+    public Job(StateName state, int runs, double populationDeviation, double compactness, EthnicGroup eg){
         this.status = JobStatus.QUEUED;
+        this.state = state;
         this.runs = runs;
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
@@ -46,6 +48,9 @@ public class Job {
 
     public int getJobId(){
         return jobId;
+    }
+    public StateName getState(){
+        return state;
     }
     public JobStatus getStatus(){
         return status;

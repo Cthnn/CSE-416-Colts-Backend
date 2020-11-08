@@ -1,26 +1,34 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.*;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.WrapperClasses.*;
 import com.example.demo.Handlers.*;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
+
 @RestController
 @CrossOrigin
 public class MainController{
-    public JobHandler jh = new JobHandler();
+
+    @Autowired
+    public JobHandler jh;
     public StateHandler sh = new StateHandler();
+
+    private StateName stateName;
+
     @PostMapping("/state")
-    public String setState(State s){
-        //Set the HTTP Sesssion's state
+    public String setState(@RequestBody StateName s){
+        System.out.println("Setting state: " + s.toString());
+        jh.init();
+        stateName = s;
         return "setState Success";
     }
     @GetMapping("/History")
@@ -28,15 +36,8 @@ public class MainController{
         return jh.getHistory();
     }
     @PostMapping("/createJob")
-    public int createJob(@RequestBody String s){
-        JSONParser parser = new JSONParser();
-        JSONObject params;
-        try{
-            params = (JSONObject)parser.parse(s);
-        }catch(Exception e){
-            System.out.println("Error");
-            return -1;
-        }
+    public int createJob(@RequestBody JSONObject params){
+        params.put("state", stateName);
         return jh.createJob(params);
     }
     @PostMapping("/jobGeo")
@@ -46,11 +47,6 @@ public class MainController{
     @PostMapping("/cancel")
     public String cancelJob(@RequestBody int jobId){
         jh.cancelJob(jobId);
-        return "200 OK";
-    }
-    @PostMapping("/delete")
-    public String deleteJob(@RequestBody int jobId){
-        jh.deleteJob(jobId);
         return "200 OK";
     }
     @PostMapping("/statuses")

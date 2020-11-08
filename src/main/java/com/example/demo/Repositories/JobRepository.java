@@ -1,5 +1,6 @@
-package com.example.demo.PersistenceClasses;
+package com.example.demo.Repositories;
 
+import com.example.demo.PersistenceClasses.Job;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

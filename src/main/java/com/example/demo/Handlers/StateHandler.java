@@ -6,15 +6,15 @@ import com.example.demo.EnumClasses.*;
 public class StateHandler{
     public ArrayList<State> states = new  ArrayList<State>();
     public JSONObject getDistricts(StateName s){
-        return s.toJSON();
+        return null;
     }
     public JSONObject getPrecincts(StateName s){
-        return s.toJSON();
+        return null;
     }
     public JSONObject getDemographic(StateName s,int precinctId){
-        return s.toJSON();
+        return null;
     }
     public JSONObject getHeatMap(StateName s,EthnicGroup eg){
-        return s.toJSON();
+        return null;
     }
 }
