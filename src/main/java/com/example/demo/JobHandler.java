@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.EnumClasses.*;
@@ -12,6 +13,7 @@ import com.example.demo.Repositories.*;
 public class JobHandler {
     public ArrayList<Job> jobs = new ArrayList<Job>();
 
+    @Autowired
     private JobRepository repository;
 
     public void init(){
@@ -58,8 +60,17 @@ public class JobHandler {
         return (ArrayList<Job>) jobs;
     }
 
-    public void genSummary(int jobId) {
+    public double[][] genSummary(int jobId) {
         // gen summary
+        double [][] summary = new double[10][5];
+        for(int i =0; i < summary.length;i++){
+            summary[i][0] = 0+((0.025)*i);
+            summary[i][1] = 0.0375+((0.025)*i);
+            summary[i][2] = 0.075+((0.025)*i);
+            summary[i][3] = 0.1125+((0.025)*i);
+            summary[i][4] = 0.15+((0.025)*i);
+        }
+        return summary;
     }
 
     public JSONObject getJobGeo(int jobId, DistrictingType type) {

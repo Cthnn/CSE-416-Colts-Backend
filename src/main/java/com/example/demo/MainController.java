@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,8 @@ import java.util.stream.IntStream;
 @RestController
 @CrossOrigin
 public class MainController{
-
-    public JobHandler jh = new JobHandler();
+    @Autowired
+    public JobHandler jh;
     public StateHandler sh = new StateHandler();
     private StateName stateName;
 
@@ -34,6 +35,7 @@ public class MainController{
     @PostMapping("/createJob")
     public int createJob(@RequestBody JSONObject params){
         params.put("state", stateName);
+        System.out.println(params.toString());
         return jh.createJob(params);
     }
     @PostMapping("/jobGeo")
@@ -51,9 +53,8 @@ public class MainController{
         return jh.getStatuses(convertedIds);
     }
     @PostMapping("/genSummary")
-    public String genSummary(@RequestBody int jobId){
-        jh.genSummary(jobId);
-        return "200 OK";
+    public double[][] genSummary(@RequestBody int jobId){
+        return jh.genSummary(jobId);
     }
     @PostMapping("/district")
     public JSONObject getDistrict(@RequestBody StateName s){
