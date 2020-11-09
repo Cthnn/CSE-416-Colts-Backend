@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.EnumClasses.*;
@@ -13,7 +12,6 @@ import com.example.demo.Repositories.*;
 public class JobHandler {
     public ArrayList<Job> jobs = new ArrayList<Job>();
 
-    @Autowired
     private JobRepository repository;
 
     public void init(){

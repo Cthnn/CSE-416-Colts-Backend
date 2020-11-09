@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,16 +17,13 @@ import java.util.stream.IntStream;
 @CrossOrigin
 public class MainController{
 
-    @Autowired
-    public JobHandler jh;
+    public JobHandler jh = new JobHandler();
     public StateHandler sh = new StateHandler();
-
     private StateName stateName;
 
     @PostMapping("/state")
     public String setState(@RequestBody StateName s){
         System.out.println("Setting state: " + s.toString());
-        jh.init();
         stateName = s;
         return "setState Success";
     }
