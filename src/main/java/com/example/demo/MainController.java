@@ -1,10 +1,12 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.json.simple.JSONObject;
 import com.example.demo.EnumClasses.*;
@@ -61,8 +63,10 @@ public class MainController{
         return sh.getDistricts(s);
     }
     @PostMapping("/precinct")
-    public JSONObject getPrecinct(@RequestBody StateName s){
-        return sh.getPrecincts(s);
+    @ResponseBody
+    public FileSystemResource getPrecinct(@RequestBody StateName s){
+        System.out.println("Sending Precinct data");
+        return sh.getPrecincts(stateName);
     }
     @PostMapping("/demographic")
     public JSONObject getDemographic(@RequestBody DemoParams params){
@@ -71,8 +75,10 @@ public class MainController{
         return sh.getDemographic(params.s, params.pId);
     }
     @PostMapping("/heatmap")
-    public JSONObject getHeatMap(@RequestBody HeatMapParams params){
-        return sh.getHeatMap(params.s, params.eg);
+    @ResponseBody
+    public FileSystemResource getHeatMap(@RequestBody StateName s){
+        System.out.println("Sending HeatMap data");
+        return sh.getHeatMap(stateName);
     }
     @GetMapping("/")
     public String home(){
