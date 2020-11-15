@@ -29,7 +29,7 @@ public class Job {
     }
 
     public Job(StateName state, int runs, double populationDeviation, double compactness, EthnicGroup eg){
-        this.status = JobStatus.QUEUED;
+        this.status = JobStatus.COMPLETED;
         this.state = state;
         this.runs = runs;
         this.populationDeviation = populationDeviation;
@@ -104,6 +104,11 @@ public class Job {
     }
     public JSONObject generateSummaryFile(){
         return null;
+    }
+    public float[][] getBoxPlotValues(EthnicGroup eg){
+        //Thought about this a little bit more and maybe this belongs in the Job class? Box plot values are gathered from across multiple districtings.
+        float[][] res = null;
+        return res;
     }
 
 }
