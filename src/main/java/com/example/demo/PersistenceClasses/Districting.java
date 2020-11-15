@@ -2,6 +2,7 @@ package com.example.demo.PersistenceClasses;
 
 import java.util.ArrayList;
 import com.example.demo.EnumClasses.*;
+
 public class Districting {
     public int districtingId;
     public ArrayList<District> districts;
@@ -33,11 +34,10 @@ public class Districting {
         //sort
     }
     public float[] getDistrictVAPs(EthnicGroup eg){
-        float[] res = null;
-        return res;
-    }
-    public float[][] getBoxPlotValues(EthnicGroup eg){
-        float[][] res = null;
+        float[] res = new float[districts.size()];
+        for(int i =0; i< districts.size();i++){
+            res[i] = districts.get(i).getVAP(eg);
+        }
         return res;
     }
 }

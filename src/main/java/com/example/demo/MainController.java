@@ -70,8 +70,6 @@ public class MainController{
     }
     @PostMapping("/demographic")
     public JSONObject getDemographic(@RequestBody DemoParams params){
-        //Split params to state and precinctId;
-        
         return sh.getDemographic(params.s, params.pId);
     }
     @PostMapping("/heatmap")
