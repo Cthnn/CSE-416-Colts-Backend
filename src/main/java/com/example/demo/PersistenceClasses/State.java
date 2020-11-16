@@ -1,34 +1,45 @@
 package com.example.demo.PersistenceClasses;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
-
-
-import org.json.simple.JSONObject;
 import com.example.demo.EnumClasses.*;
 
 @Entity
 public class State {
     @Id
     public int stateId;
+    @Enumerated(EnumType.STRING)
     public StateName state;
-    public String filePath;
+    public String districtPath;
+    public String precinctPath;
+    public String heatMapPath;
 
-    public State(StateName state){
-        this.state = state;
+    public State(){
+        // needed for JPA
     }
-    
+
+    public State(int stateId, StateName state, String districtPath, String precinctPath, String heatMapPath){
+        this.stateId = stateId;
+        this.state = state;
+        this.districtPath = districtPath;
+        this.precinctPath = precinctPath;
+        this.heatMapPath = heatMapPath;
+    }
+    public int getStateId(){
+        return stateId;
+    }
     public StateName getState(){
         return state;
     }
-    public void setName(StateName state){
-        this.state = state;
+    public String getDistrictPath(){
+        return districtPath;
     }
-    public JSONObject getHeatMap(EthnicGroup eg){
-        return new JSONObject();
+    public String getHeatMapPath(){
+        return heatMapPath;
     }
-    public JSONObject toJSON(){
-        //possibly a redundant method
-        return new JSONObject();
+    public String getPrecinctPath(){
+        return precinctPath;
     }
 }

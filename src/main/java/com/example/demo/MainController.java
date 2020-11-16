@@ -21,13 +21,14 @@ import java.util.stream.IntStream;
 public class MainController{
     @Autowired
     public JobHandler jh;
-    public StateHandler sh = new StateHandler();
-    private StateName stateName;
+    @Autowired
+    public StateHandler sh;
+    private State state;
 
     @PostMapping("/state")
     public String setState(@RequestBody StateName s){
         System.out.println("Setting state: " + s.toString());
-        stateName = s;
+        state = sh.getState(s);
         return "setState Success";
     }
     @GetMapping("/History")
@@ -59,24 +60,26 @@ public class MainController{
         return jh.genSummary(jobId);
     }
     @PostMapping("/district")
-    public JSONObject getDistrict(@RequestBody StateName s){
+    @ResponseBody
+    public FileSystemResource getDistrict(@RequestBody StateName s){
+        System.out.println("Sending District data");
         return sh.getDistricts(s);
     }
     @PostMapping("/precinct")
     @ResponseBody
     public FileSystemResource getPrecinct(@RequestBody StateName s){
         System.out.println("Sending Precinct data");
-        return sh.getPrecincts(stateName);
+        return sh.getPrecincts(s);
     }
     @PostMapping("/demographic")
-    public JSONObject getDemographic(@RequestBody DemoParams params){
-        return sh.getDemographic(params.s, params.pId);
+    public Precinct getDemographic(@RequestBody String pid){
+        return sh.getDemographic(pid);
     }
     @PostMapping("/heatmap")
     @ResponseBody
     public FileSystemResource getHeatMap(@RequestBody StateName s){
         System.out.println("Sending HeatMap data");
-        return sh.getHeatMap(stateName);
+        return sh.getHeatMap(s);
     }
     @GetMapping("/")
     public String home(){

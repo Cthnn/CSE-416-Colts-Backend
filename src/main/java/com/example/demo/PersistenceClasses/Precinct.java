@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import com.example.demo.EnumClasses.*;
 
@@ -25,7 +24,7 @@ public class Precinct {
     public int american_indian;
     public int native_hawaiian;
     public int other;
-    
+
     public ArrayList<Neighbors> neighbors;
     
     public Precinct(String precinctId, StateName state, ArrayList<Neighbors> neighbors,int countyId,int totalPop,HashMap<EthnicGroup,Integer>ethnicPop){
