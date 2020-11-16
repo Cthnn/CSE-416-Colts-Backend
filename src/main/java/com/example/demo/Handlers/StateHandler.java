@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class StateHandler{
 
             State state = new State(id, StateName.values()[i], districtPath, precinctPath, heatmapPath);
             stateRepository.save(state);
-            states.put(state.getState(), state);
+            states.put(state.getStateName(), state);
         }
     }
 
@@ -46,7 +45,7 @@ public class StateHandler{
         }else{
             for(int i = 0; i < repoStates.size(); i++){
                 State state = repoStates.get(i);
-                states.put(state.getState(), state);
+                states.put(state.getStateName(), state);
             }
         }
     }

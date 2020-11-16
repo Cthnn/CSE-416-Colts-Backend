@@ -30,7 +30,7 @@ public class State {
     public int getStateId(){
         return stateId;
     }
-    public StateName getState(){
+    public StateName getStateName(){
         return state;
     }
     public String getDistrictPath(){

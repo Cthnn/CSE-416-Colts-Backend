@@ -63,13 +63,13 @@ public class MainController{
     @ResponseBody
     public FileSystemResource getDistrict(@RequestBody StateName s){
         System.out.println("Sending District data");
-        return sh.getDistricts(s);
+        return sh.getDistricts(state.getStateName());
     }
     @PostMapping("/precinct")
     @ResponseBody
     public FileSystemResource getPrecinct(@RequestBody StateName s){
         System.out.println("Sending Precinct data");
-        return sh.getPrecincts(s);
+        return sh.getPrecincts(state.getStateName());
     }
     @PostMapping("/demographic")
     public Precinct getDemographic(@RequestBody String pid){
@@ -79,7 +79,7 @@ public class MainController{
     @ResponseBody
     public FileSystemResource getHeatMap(@RequestBody StateName s){
         System.out.println("Sending HeatMap data");
-        return sh.getHeatMap(s);
+        return sh.getHeatMap(state.getStateName());
     }
     @GetMapping("/")
     public String home(){
