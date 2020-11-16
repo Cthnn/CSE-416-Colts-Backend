@@ -2,14 +2,11 @@ package com.example.demo.Handlers;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import org.springframework.core.io.FileSystemResource;
 
-import com.example.demo.PersistenceClasses.*;
 import com.example.demo.EnumClasses.*;
 public class StateHandler{
-    public ArrayList<State> states = new  ArrayList<State>();
     public JSONObject getDistricts(StateName s){
         return null;
     }
