@@ -35,8 +35,8 @@ public class MainController{
         return jh.getHistory();
     }
     @PostMapping("/createJob")
-    public int createJob(@RequestBody JSONObject params){
-        params.put("state", stateName);
+    public int createJob(@RequestBody JobParams params){
+        // params.put("state", stateName);
         System.out.println(params.toString());
         return jh.createJob(params);
     }

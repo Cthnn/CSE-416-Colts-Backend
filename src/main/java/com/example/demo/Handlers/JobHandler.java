@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
+import com.example.demo.WrapperClasses.JobParams;
 @Service
 public class JobHandler {
     @Autowired
@@ -20,12 +21,12 @@ public class JobHandler {
         return jobs;
     }
 
-    public int createJob(JSONObject params) {
+    public int createJob(JobParams params) {
         if (repository == null) {
             System.out.println("REPO is NULL");
             return 0;
         }
-        Job j = repository.save(new Job((StateName) params.get("state"), ((Number) params.get("plans")).intValue(), ((Number) params.get("pop")).doubleValue(), ((Number) params.get("comp")).doubleValue(), EthnicGroup.valueOf((String) params.get("group"))));
+        Job j = repository.save(new Job(params.state, params.plans, params.pop, params.comp, params.group));
         return j.getJobId();
     }
 

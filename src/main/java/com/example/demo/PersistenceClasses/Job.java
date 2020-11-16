@@ -2,6 +2,8 @@ package com.example.demo.PersistenceClasses;
 
 import org.json.simple.JSONObject;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -14,12 +16,16 @@ public class Job {
     @Id 
     @GeneratedValue
     private int jobId;
+
+    @Enumerated(EnumType.STRING)
     private JobStatus status;
+    @Enumerated(EnumType.STRING)
     private StateName state;
-    private int runs;
+    private int plans;
     private double populationDeviation;
     private double compactness;
-    private EthnicGroup eg;
+    @Enumerated(EnumType.STRING)
+    private EthnicGroup ethnicGroup;
 
     @Transient
     @JsonIgnore
@@ -28,22 +34,22 @@ public class Job {
         
     }
 
-    public Job(StateName state, int runs, double populationDeviation, double compactness, EthnicGroup eg){
-        this.status = JobStatus.COMPLETED;
+    public Job(StateName state, int plans, double populationDeviation, double compactness, EthnicGroup eg){
+        this.status = JobStatus.QUEUED;
         this.state = state;
-        this.runs = runs;
+        this.plans = plans;
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
-        this.eg = eg;
+        this.ethnicGroup = eg;
     }
 
     public void printParams(){
         System.out.println(this.jobId);
         System.out.println(this.status.toString());
-        System.out.println(this.runs);
+        System.out.println(this.plans);
         System.out.println(this.populationDeviation);
         System.out.println(this.compactness);
-        System.out.println(this.eg.toString());
+        System.out.println(this.ethnicGroup.toString());
     }
 
     public int getJobId(){
@@ -56,7 +62,7 @@ public class Job {
         return status;
     }
     public int getRuns(){
-        return runs;
+        return plans;
     }
     public double getPopulationDeviation(){
         return populationDeviation;
@@ -69,7 +75,7 @@ public class Job {
         return job;
     }
     public EthnicGroup getEthnicGroup(){
-        return eg;
+        return ethnicGroup;
     }
     public void setJobId(int jobId){
         this.jobId = jobId;
@@ -81,7 +87,7 @@ public class Job {
         this.job = job;
     }
     public void setEthnicGroup(EthnicGroup eg){
-        this.eg = eg;
+        this.ethnicGroup = eg;
     }
     public float[][] generateBoxPlot(){
         float [][] res = null;
