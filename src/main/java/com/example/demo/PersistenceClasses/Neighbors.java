@@ -1,16 +1,15 @@
 package com.example.demo.PersistenceClasses;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 public class Neighbors {
+
     @Id
-    @Autowired
+    @GeneratedValue
+    public int id;
     public String gisId;
-    @Id
-    @Autowired
     public String neighbor;
 }

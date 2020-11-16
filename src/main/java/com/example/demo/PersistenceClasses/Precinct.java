@@ -25,8 +25,7 @@ public class Precinct {
     public int american_indian;
     public int native_hawaiian;
     public int other;
-
-    @OneToMany(mappedBy="gisId")
+    
     public ArrayList<Neighbors> neighbors;
     
     public Precinct(String precinctId, StateName state, ArrayList<Neighbors> neighbors,int countyId,int totalPop,HashMap<EthnicGroup,Integer>ethnicPop){
@@ -93,10 +92,10 @@ public class Precinct {
         this.other = ethnicPop.get(EthnicGroup.OTHER);
     }
 
-    public ArrayList<Neighbors> getNeighbors(){
-        return neighbors;
-    }
-    public void setNeighbors(ArrayList<Neighbors> neighbors){
-        this.neighbors = neighbors;
-    }
+    // public ArrayList<Neighbors> getNeighbors(){
+    //     return neighbors;
+    // }
+    // public void setNeighbors(ArrayList<Neighbors> neighbors){
+    //     this.neighbors = neighbors;
+    // }
 }
