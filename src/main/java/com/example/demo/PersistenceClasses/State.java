@@ -9,12 +9,12 @@ import com.example.demo.EnumClasses.*;
 @Entity
 public class State {
     @Id
-    public int stateId;
+    private int stateId;
     @Enumerated(EnumType.STRING)
-    public StateName state;
-    public String districtPath;
-    public String precinctPath;
-    public String heatMapPath;
+    private StateName state;
+    private String districtPath;
+    private String precinctPath;
+    private String heatMapPath;
 
     public State(){
         // needed for JPA

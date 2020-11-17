@@ -6,10 +6,10 @@ import com.example.demo.EnumClasses.*;
 
 public class District {
 
-    public int districtId;
-    public StateName state;
-    public ArrayList<Precinct> precincts;
-    public ArrayList<float[]> boundary;
+    private int districtId;
+    private StateName state;
+    private ArrayList<Precinct> precincts;
+    private ArrayList<float[]> boundary;
     
     public District(int districtId, StateName state,ArrayList<Precinct> precincts,ArrayList<float[]> boundary){
         this.districtId = districtId;
