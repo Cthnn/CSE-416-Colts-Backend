@@ -7,6 +7,14 @@ import javax.persistence.Id;
 public class Neighbor {
 
     @Id
-    public String geoId;
-    public String neighborId;
+    private String geoId;
+    private String neighborId;
+
+    public String getGeoId(){
+        return geoId;
+    }
+
+    public String getNeighborId(){
+        return neighborId;
+    }
 }

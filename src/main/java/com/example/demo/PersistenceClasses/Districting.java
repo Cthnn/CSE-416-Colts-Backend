@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import com.example.demo.EnumClasses.*;
 
 public class Districting {
-    public int districtingId;
-    public ArrayList<District> districts;
-    public StateName state;
+    private int districtingId;
+    private ArrayList<District> districts;
+    private StateName state;
+    
     public Districting(int districtingId, ArrayList<District> districts, StateName state){
         this.districtingId = districtingId;
         this.districts = districts;

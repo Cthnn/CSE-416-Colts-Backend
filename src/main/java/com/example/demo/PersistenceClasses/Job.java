@@ -30,6 +30,7 @@ public class Job {
     @Transient
     @JsonIgnore
     private Districting[] job;
+    
     public Job() {
         
     }
@@ -41,15 +42,6 @@ public class Job {
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
         this.ethnicGroup = eg;
-    }
-
-    public void printParams(){
-        System.out.println(this.jobId);
-        System.out.println(this.status.toString());
-        System.out.println(this.plans);
-        System.out.println(this.populationDeviation);
-        System.out.println(this.compactness);
-        System.out.println(this.ethnicGroup.toString());
     }
 
     public int getJobId(){
