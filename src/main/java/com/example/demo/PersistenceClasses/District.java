@@ -54,7 +54,7 @@ public class District {
         for(int i = 0; i < precincts.size();i++){
             Precinct p = precincts.get(i);
             totalPop += p.getTotalPop();
-            egPop += p.getEthnicPop().get(eg);
+            egPop += p.getVapPopulations().get(eg);
         }
         return ((float)egPop)/totalPop;
     }

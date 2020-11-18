@@ -29,6 +29,7 @@ public class MainController{
     public String setState(@RequestBody StateName s){
         System.out.println("Setting state: " + s.toString());
         state = sh.getState(s);
+        sh.getDemographic(state.getStateName(), "G0100010110");
         return "setState Success";
     }
     @GetMapping("/History")
@@ -72,8 +73,8 @@ public class MainController{
         return sh.getPrecincts(state.getStateName());
     }
     @PostMapping("/demographic")
-    public Precinct getDemographic(@RequestBody String pid){
-        return sh.getDemographic(pid);
+    public Precinct getDemographic(@RequestBody String precinctId){
+        return sh.getDemographic(state.getStateName(), precinctId);
     }
     @PostMapping("/heatmap")
     @ResponseBody

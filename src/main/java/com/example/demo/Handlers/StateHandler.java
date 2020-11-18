@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -13,15 +12,12 @@ import org.springframework.stereotype.Service;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.Precinct;
 import com.example.demo.PersistenceClasses.State;
-import com.example.demo.Repositories.PrecinctRepository;
 import com.example.demo.Repositories.StateRepository;
 @Service
 public class StateHandler{
     private HashMap<StateName, State> states = new HashMap<>();
     @Autowired
     private StateRepository stateRepository;
-    @Autowired
-    private PrecinctRepository precinctRepository;
 
     private void insertStates(){
         int[] stateIds = {1,12,51};
@@ -70,12 +66,7 @@ public class StateHandler{
         return new FileSystemResource(path); 
     }
 
-    public Precinct getDemographic(String precinctId){
-        Optional<Precinct> precinct = precinctRepository.findById(precinctId);
-        if(precinct.isPresent()){
-            return precinct.get();
-        }
-
-        return null;
+    public Precinct getDemographic(StateName s, String precinctId){
+        return states.get(s).getPrecinct(precinctId);
     }
 }
