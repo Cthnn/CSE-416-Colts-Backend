@@ -83,10 +83,6 @@ public class Job {
     public void setEthnicGroup(EthnicGroup eg){
         this.eg = eg;
     }
-    public float[][] generateBoxPlot(){
-        float [][] res = null;
-        return res;
-    }
     public Districting getDistricting(DistrictingType type){
         return null;
     }
@@ -99,11 +95,19 @@ public class Job {
     private JSONObject generateGeoJson(Districting dist){
         return null;
     }
-    public JSONObject getPrecinctGeoJson(){
+    // Don't have use for this method
+    // public JSONObject getPrecinctGeoJson(){
+    //     return null;
+    // }
+    public JSONObject generateSummaryFile(){
+        //Precinct and District Geometry
+        //Box plot values??
+        //Generate the summary file so that we dan just get poxplotvalues from it later
         return null;
     }
-    public JSONObject generateSummaryFile(){
-        return null;
+    private float[][] generateBoxPlot(EthnicGroup eg){
+        float [][] res = null;
+        return res;
     }
     public float[][] getBoxPlotValues(EthnicGroup eg){
         //Thought about this a little bit more and maybe this belongs in the Job class? Box plot values are gathered from across multiple districtings.

@@ -68,7 +68,7 @@ public class District {
     public int getTotalCounty(){
         HashSet<Integer> ids = new HashSet<Integer>();
         for(int i = 0; i < precincts.size();i++){
-            ids.add(precincts.get(i).county_id);
+            ids.add(precincts.get(i).getCountyId());
         }
         return ids.size();
     }
