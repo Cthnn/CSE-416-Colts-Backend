@@ -1,12 +1,13 @@
 package com.example.demo.PersistenceClasses;
-import java.util.ArrayList;
+
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import com.example.demo.EnumClasses.*;
 
@@ -14,11 +15,13 @@ import com.example.demo.EnumClasses.*;
 public class Precinct {
     @Id
     private String geoId;
-    private int stateId;
+
+    @ManyToOne
+    @JoinColumn(name = "state_id")
+    private State state;
     private int countyId;
     private String precinctId;
 
-    private String stateName;
     private String countyName;
     private String precinctName;
 
@@ -40,43 +43,55 @@ public class Precinct {
     private int vapNativeHawaiian;
     private int vapOther;
 
-    @Transient
-    private StateName state;
-
     @OneToMany
-    @Transient
     @JoinColumn(name = "geo_id")
-    private ArrayList<Neighbor> neighbors;
+    private List<Neighbor> neighbors;
+
+    public String getGeoId(){
+        return geoId;
+    }
+
+    public State getState(){
+        return state;
+    }
 
     public String getPrecinctId(){
         return precinctId;
-    }
-    public void setPrecinctId(String precinctId){
-        this.precinctId = precinctId;
     }
     
     public int getCountyId(){
         return countyId;
     }
-    public void setCountyId(int countyId){
-        this.countyId = countyId;
-    }
-   
+
     public int getTotalPop(){
         return totalPopulation;
     }
-    public void setTotalPop(int totalPop){
-        this.totalPopulation = totalPop;
+
+    public int getVapPop(){
+        return vapPopulation;
     }
     
-    public StateName getState(){
-        return state;
+    public String getCountyName(){
+        return countyName;
     }
-    public void setState(StateName state){
-        this.state = state;
+
+    public String getPrecinctName(){
+        return precinctName;
+    }
+
+    public HashMap<EthnicGroup,Integer> getTotalPopulations(){
+        HashMap<EthnicGroup,Integer> totalPop = new HashMap<EthnicGroup,Integer>();
+        totalPop.put(EthnicGroup.WHITE,totalWhite);
+        totalPop.put(EthnicGroup.BLACK,totalBlack);
+        totalPop.put(EthnicGroup.ASIAN,totalAsian);
+        totalPop.put(EthnicGroup.HISPANIC,totalHispanic);
+        totalPop.put(EthnicGroup.NATIVE_AMERICAN,totalAmericanIndian);
+        totalPop.put(EthnicGroup.PACIFIC_ISLANDER,totalNativeHawaiian);
+        totalPop.put(EthnicGroup.OTHER,totalOther);
+        return totalPop;
     }
     
-    public HashMap<EthnicGroup,Integer> getEthnicPop(){
+    public HashMap<EthnicGroup,Integer> getVapPopulations(){
         HashMap<EthnicGroup,Integer> ethnicPop = new HashMap<EthnicGroup,Integer>();
         ethnicPop.put(EthnicGroup.WHITE,vapWhite);
         ethnicPop.put(EthnicGroup.BLACK,vapBlack);
@@ -87,20 +102,11 @@ public class Precinct {
         ethnicPop.put(EthnicGroup.OTHER,vapOther);
         return ethnicPop;
     }
-    // public void setEthnicPop(HashMap<EthnicGroup,Integer> ethnicPop){
-    //     this.white = ethnicPop.get(EthnicGroup.WHITE);
-    //     this.black = ethnicPop.get(EthnicGroup.BLACK);
-    //     this.asian = ethnicPop.get(EthnicGroup.ASIAN);
-    //     this.hispanic = ethnicPop.get(EthnicGroup.HISPANIC);
-    //     this.american_indian = ethnicPop.get(EthnicGroup.NATIVE_AMERICAN);
-    //     this.native_hawaiian = ethnicPop.get(EthnicGroup.PACIFIC_ISLANDER);
-    //     this.other = ethnicPop.get(EthnicGroup.OTHER);
-    // }
-
-    public ArrayList<Neighbor> getNeighbors(){
+    
+    public List<Neighbor> getNeighbors(){
         return neighbors;
     }
-    public void setNeighbors(ArrayList<Neighbor> neighbors){
+    public void setNeighbors(List<Neighbor> neighbors){
         this.neighbors = neighbors;
     }
 }
