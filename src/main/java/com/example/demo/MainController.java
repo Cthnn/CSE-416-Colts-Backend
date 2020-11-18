@@ -29,7 +29,6 @@ public class MainController{
     public String setState(@RequestBody StateName s){
         System.out.println("Setting state: " + s.toString());
         state = sh.getState(s);
-        sh.getDemographic(state.getStateName(), "G0100010110");
         return "setState Success";
     }
     @GetMapping("/History")
