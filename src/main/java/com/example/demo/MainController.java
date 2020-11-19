@@ -66,33 +66,24 @@ public class MainController{
     @PostMapping("/district")
     @ResponseBody
     public Resource getDistrict(@RequestBody StateName s){
-        if(state == null)
-            return null;
-
         System.out.println("Sending District data");
-        return sh.getDistricts(state.getStateName());
+        return sh.getDistricts(s);
     }
     @PostMapping("/precinct")
     @ResponseBody
     public Resource getPrecinct(@RequestBody StateName s){
-        if(state == null)
-            return null;
         System.out.println("Sending Precinct data");
-        return sh.getPrecincts(state.getStateName());
+        return sh.getPrecincts(s);
     }
     @PostMapping("/demographic")
-    public Precinct getDemographic(@RequestBody String precinctId){
-        if(state == null)
-            return null;
-        return sh.getDemographic(state.getStateName(), precinctId);
+    public Precinct getDemographic(@RequestBody DemographicParams params){
+        return sh.getDemographic(params.state, params.precinctId);
     }
     @PostMapping("/heatmap")
     @ResponseBody
     public Resource getHeatMap(@RequestBody StateName s){
-        if(state == null)
-            return null;
         System.out.println("Sending HeatMap data");
-        return sh.getHeatMap(state.getStateName());
+        return sh.getHeatMap(s);
     }
     @GetMapping("/")
     public String home(){
