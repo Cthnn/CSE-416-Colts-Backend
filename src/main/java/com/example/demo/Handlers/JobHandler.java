@@ -1,5 +1,7 @@
 package com.example.demo.Handlers;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +14,8 @@ import com.example.demo.PersistenceClasses.*;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.WrapperClasses.JobParams;
+import org.springframework.core.io.FileSystemResource;
+
 @Service
 public class JobHandler {
     @Autowired
@@ -61,8 +65,17 @@ public class JobHandler {
         return genBoxPlot(jobId);
     }
 
-    public JSONObject getJobGeo(int jobId, DistrictingType type) {
-        return new JSONObject();
+    public FileSystemResource getJobGeo(int jobId, DistrictingType type) {
+        Optional<Job> job = repository.findById(jobId);
+        if(job.isPresent()){
+            Job j = job.get();
+            String state = (j.getState()).toString().toLowerCase();
+            Path path = Paths.get("src/main/resources/districts/"+state+"_districts.json");
+            return new FileSystemResource(path);
+        }else{
+            System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
+            return null;
+        }
     }
 
     public double[][] genBoxPlot(int jobId) {
