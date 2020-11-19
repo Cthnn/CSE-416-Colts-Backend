@@ -12,6 +12,8 @@ import javax.persistence.Table;
 @IdClass(Neighbor.class)
 @Table(name = "neighbor")
 public class Neighbor implements Serializable{
+    private static final long serialVersionUID = 1L;
+    
     private String geoId;
     private String neighborId;
 

@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.EnumClasses.*;
@@ -58,15 +59,15 @@ public class StateHandler{
         return states.get(name);
     }
 
-    public FileSystemResource getDistricts(StateName s){
+    public Resource getDistricts(StateName s){
         Path path = Paths.get(states.get(s).getDistrictPath());
         return new FileSystemResource(path); 
     }
-    public FileSystemResource getPrecincts(StateName s){
+    public Resource getPrecincts(StateName s){
         Path path = Paths.get(states.get(s).getPrecinctPath());
         return new FileSystemResource(path); 
     }
-    public FileSystemResource getHeatMap(StateName s){
+    public Resource getHeatMap(StateName s){
         Path path = Paths.get(states.get(s).getHeatMapPath());
         return new FileSystemResource(path); 
     }

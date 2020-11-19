@@ -98,11 +98,6 @@ public class Job {
         this.districtings = d;
     }
 
-    public float[][] generateBoxPlot(){
-        float [][] res = null;
-        return res;
-    }
-
     @Transient
     @JsonIgnore
     public Districting getDistricting(DistrictingType type){
@@ -134,12 +129,23 @@ public class Job {
         return null;
     }
 
+    private double[][] generateBoxPlot(EthnicGroup eg){
+        // dummy data
+        double [][] res = new double[10][5];
+        for(int i =0; i < res.length;i++){
+            res[i][0] = 0+((0.025)*i);
+            res[i][1] = 0.0375+((0.025)*i);
+            res[i][2] = 0.075+((0.025)*i);
+            res[i][3] = 0.1125+((0.025)*i);
+            res[i][4] = 0.15+((0.025)*i);
+        }
+        return res;
+    }
+
     @Transient
     @JsonIgnore
-    public float[][] getBoxPlotValues(EthnicGroup eg){
-        //Thought about this a little bit more and maybe this belongs in the Job class? Box plot values are gathered from across multiple districtings.
-        float[][] res = null;
-        return res;
+    public double[][] getBoxPlotValues(){
+        return generateBoxPlot(ethnicGroup);
     }
 
 }

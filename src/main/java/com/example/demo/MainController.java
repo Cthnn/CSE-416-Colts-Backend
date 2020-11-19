@@ -1,14 +1,13 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.json.simple.JSONObject;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.WrapperClasses.*;
@@ -43,7 +42,7 @@ public class MainController{
         return jh.createJob(params);
     }
     @PostMapping("/jobGeo")
-    public JSONObject getJobGeo(@RequestBody JobGeoParams params){
+    public Resource getJobGeo(@RequestBody JobGeoParams params){
         return jh.getJobGeo(params.jobId,params.type);
     }
     @PostMapping("/cancel")
@@ -56,19 +55,23 @@ public class MainController{
         Integer[] convertedIds = IntStream.of(jobIds).boxed().toArray( Integer[]::new );
         return jh.getStatuses(convertedIds);
     }
-    @PostMapping("/genSummary")
-    public double[][] genSummary(@RequestBody int jobId){
-        return jh.genSummary(jobId);
+    @PostMapping("/getSummary")
+    public Resource getSummary(@RequestBody int jobId){
+        return jh.getSummary(jobId);
+    }
+    @PostMapping("/getBoxPlot")
+    public double[][] getBoxPlot(@RequestBody int jobId){
+        return jh.getBoxPlot(jobId);
     }
     @PostMapping("/district")
     @ResponseBody
-    public FileSystemResource getDistrict(@RequestBody StateName s){
+    public Resource getDistrict(@RequestBody StateName s){
         System.out.println("Sending District data");
         return sh.getDistricts(state.getStateName());
     }
     @PostMapping("/precinct")
     @ResponseBody
-    public FileSystemResource getPrecinct(@RequestBody StateName s){
+    public Resource getPrecinct(@RequestBody StateName s){
         System.out.println("Sending Precinct data");
         return sh.getPrecincts(state.getStateName());
     }
@@ -78,7 +81,7 @@ public class MainController{
     }
     @PostMapping("/heatmap")
     @ResponseBody
-    public FileSystemResource getHeatMap(@RequestBody StateName s){
+    public Resource getHeatMap(@RequestBody StateName s){
         System.out.println("Sending HeatMap data");
         return sh.getHeatMap(state.getStateName());
     }

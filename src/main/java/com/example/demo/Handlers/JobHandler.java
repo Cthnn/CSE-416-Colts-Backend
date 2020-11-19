@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
@@ -15,13 +14,20 @@ import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.WrapperClasses.JobParams;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 @Service
 public class JobHandler {
     @Autowired
     private JobRepository repository;
 
-    
+    public Job getJob(int jobId){
+        Optional<Job> job = repository.findById(jobId);
+        if(job.isPresent())
+            return job.get();
+        return null;
+    }
+
     public List<Job> getHistory() {
         List<Job> jobs = (ArrayList<Job>) repository.findAll();
         return jobs;
@@ -37,16 +43,15 @@ public class JobHandler {
     }
 
     public void cancelJob(int jobId) {
-        Optional<Job> job = repository.findById(jobId);
-        if(job.isPresent()){
-            Job j = job.get();
-            JobStatus status = j.getStatus();
+        Job job = getJob(jobId);
+        if(job != null){
+            JobStatus status = job.getStatus();
             //repository.delete(j); -- Don't delete cancelled jobs.
             if(status == JobStatus.COMPLETED || status == JobStatus.ABORTED || status == JobStatus.CANCELLED){
                 repository.deleteById(jobId);
                 //Use information from Job object obtained from JobRepo, and delete associated files in seawulf.
             }else if(status == JobStatus.QUEUED || status == JobStatus.INPROGRESS){
-                j.setStatus(JobStatus.CANCELLED);
+                job.setStatus(JobStatus.CANCELLED);
                 //Cancel on seawulf
                 repository.save(j);
             }
@@ -55,17 +60,24 @@ public class JobHandler {
         }
     }
     public List<Job> getStatuses(Integer[] jobIds) {
-        // get statuses for specified jobs
         List<Job> jobs = (ArrayList<Job>) repository.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
         return jobs;
     }
 
-    public double[][] genSummary(int jobId) {
-        // gen summary
-        return genBoxPlot(jobId);
+
+    public Resource getSummary(int jobId) {
+        // create the job summary json
+        return null;
     }
 
-    public FileSystemResource getJobGeo(int jobId, DistrictingType type) {
+    public double[][] getBoxPlot(int jobId) {
+        Job job = getJob(jobId);
+        if(job != null)
+            return job.getBoxPlotValues();
+        return null;
+    }
+
+    public Resource getJobGeo(int jobId, DistrictingType type) {
         Optional<Job> job = repository.findById(jobId);
         if(job.isPresent()){
             Job j = job.get();
@@ -73,20 +85,8 @@ public class JobHandler {
             Path path = Paths.get("src/main/resources/districts/"+state+"_districts.json");
             return new FileSystemResource(path);
         }else{
-            System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
+            System.out.println("ERROR: Job does not exist with id: " + jobId);
             return null;
         }
-    }
-
-    public double[][] genBoxPlot(int jobId) {
-        double [][] res = new double[10][5];
-        for(int i =0; i < res.length;i++){
-            res[i][0] = 0+((0.025)*i);
-            res[i][1] = 0.0375+((0.025)*i);
-            res[i][2] = 0.075+((0.025)*i);
-            res[i][3] = 0.1125+((0.025)*i);
-            res[i][4] = 0.15+((0.025)*i);
-        }
-        return res;
     }
 }
