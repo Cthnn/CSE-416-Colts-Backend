@@ -42,6 +42,14 @@ public class JobHandler {
         return j.getJobId();
     }
 
+    public void updateStatus(int jobId, JobStatus status){
+        Job job = getJob(jobId);
+        if(job != null){
+            job.setStatus(status);
+            repository.save(job);
+        }
+    }
+
     public void cancelJob(int jobId) {
         Job job = getJob(jobId);
         if(job != null){

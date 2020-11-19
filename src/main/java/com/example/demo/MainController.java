@@ -66,27 +66,44 @@ public class MainController{
     @PostMapping("/district")
     @ResponseBody
     public Resource getDistrict(@RequestBody StateName s){
+        if(state == null)
+            return null;
+
         System.out.println("Sending District data");
         return sh.getDistricts(state.getStateName());
     }
     @PostMapping("/precinct")
     @ResponseBody
     public Resource getPrecinct(@RequestBody StateName s){
+        if(state == null)
+            return null;
         System.out.println("Sending Precinct data");
         return sh.getPrecincts(state.getStateName());
     }
     @PostMapping("/demographic")
     public Precinct getDemographic(@RequestBody String precinctId){
+        if(state == null)
+            return null;
         return sh.getDemographic(state.getStateName(), precinctId);
     }
     @PostMapping("/heatmap")
     @ResponseBody
     public Resource getHeatMap(@RequestBody StateName s){
+        if(state == null)
+            return null;
         System.out.println("Sending HeatMap data");
         return sh.getHeatMap(state.getStateName());
     }
     @GetMapping("/")
     public String home(){
+        JobParams params = new JobParams();
+        params.comp = 0.25;
+        params.plans = 2345;
+        params.group = EthnicGroup.NATIVE_AMERICAN;
+        params.state = StateName.VIRGINIA;
+        params.pop = 0.5;
+        int jobId = jh.createJob(params);
+        jh.updateStatus(jobId, JobStatus.COMPLETED);
         return "Colts Server";
     }
 }
