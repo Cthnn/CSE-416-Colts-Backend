@@ -1,6 +1,7 @@
 package com.example.demo.PersistenceClasses;
-import java.util.ArrayList;
+
 import java.util.HashSet;
+import java.util.List;
 
 import com.example.demo.EnumClasses.*;
 
@@ -8,14 +9,13 @@ public class District {
 
     private int districtId;
     private StateName state;
-    private ArrayList<Precinct> precincts;
-    private ArrayList<float[]> boundary;
+    private List<Precinct> precincts;
+
     
-    public District(int districtId, StateName state,ArrayList<Precinct> precincts,ArrayList<float[]> boundary){
+    public District(int districtId, StateName state,List<Precinct> precincts){
         this.districtId = districtId;
         this.state = state;
         this.precincts = precincts;
-        this.boundary = boundary;
     }
     
     public int getDistrictId(){
@@ -32,20 +32,11 @@ public class District {
         this.state = state;
     }
 
-    public ArrayList<Precinct> getPrecincts(){
+    public List<Precinct> getPrecincts(){
         return precincts;
     }
-    public void setPrecincts(ArrayList<Precinct> precincts){
+    public void setPrecincts(List<Precinct> precincts){
         this.precincts = precincts;
-    }
-
-    public ArrayList<float[]> getBoundary(){
-        //might not need this
-        return boundary;
-    }
-    public void setBoundary(ArrayList<float[]> boundary){
-        //might not need this
-        this.boundary = boundary;
     }
 
     public float getVAP(EthnicGroup eg){

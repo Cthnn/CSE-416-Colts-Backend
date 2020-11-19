@@ -1,14 +1,15 @@
 package com.example.demo.PersistenceClasses;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import com.example.demo.EnumClasses.*;
 
 public class Districting {
     private int districtingId;
-    private ArrayList<District> districts;
+    private List<District> districts;
     private StateName state;
     
-    public Districting(int districtingId, ArrayList<District> districts, StateName state){
+    public Districting(int districtingId, List<District> districts, StateName state){
         this.districtingId = districtingId;
         this.districts = districts;
         this.state = state;
@@ -19,10 +20,10 @@ public class Districting {
     public void setDistrictingId(int districtingId){
         this.districtingId = districtingId;
     }
-    public ArrayList<District> getDistricts(){
+    public List<District> getDistricts(){
         return districts;
     }
-    public void setDistricts(ArrayList<District> districts){
+    public void setDistricts(List<District> districts){
         this.districts = districts;
     }
     public StateName getState(){

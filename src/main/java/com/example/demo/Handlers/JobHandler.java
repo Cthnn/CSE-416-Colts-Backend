@@ -1,6 +1,8 @@
 package com.example.demo.Handlers;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
@@ -16,8 +18,8 @@ public class JobHandler {
     private JobRepository repository;
 
     
-    public ArrayList<Job> getHistory() {
-        ArrayList<Job> jobs = (ArrayList<Job>) repository.findAll();
+    public List<Job> getHistory() {
+        List<Job> jobs = (ArrayList<Job>) repository.findAll();
         return jobs;
     }
 
@@ -48,10 +50,10 @@ public class JobHandler {
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }
     }
-    public ArrayList<Job> getStatuses(Integer[] jobIds) {
+    public List<Job> getStatuses(Integer[] jobIds) {
         // get statuses for specified jobs
-        Iterable<Job> jobs = repository.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
-        return (ArrayList<Job>) jobs;
+        List<Job> jobs = (ArrayList<Job>) repository.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
+        return jobs;
     }
 
     public double[][] genSummary(int jobId) {

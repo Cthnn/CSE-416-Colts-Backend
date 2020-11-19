@@ -13,7 +13,7 @@ import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.WrapperClasses.*;
 import com.example.demo.Handlers.*;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @RestController
@@ -32,7 +32,8 @@ public class MainController{
         return "setState Success";
     }
     @GetMapping("/History")
-    public ArrayList<Job> getHistory(){
+    public List<Job> getHistory(){
+        // System.out.println(sh.getDemographic(StateName.ALABAMA, "G010009011").getNeighbors().size());
         return jh.getHistory();
     }
     @PostMapping("/createJob")
@@ -51,7 +52,7 @@ public class MainController{
         return "200 OK";
     }
     @PostMapping("/statuses")
-    public ArrayList<Job> getStatuses(@RequestBody int[] jobIds){
+    public List<Job> getStatuses(@RequestBody int[] jobIds){
         Integer[] convertedIds = IntStream.of(jobIds).boxed().toArray( Integer[]::new );
         return jh.getStatuses(convertedIds);
     }

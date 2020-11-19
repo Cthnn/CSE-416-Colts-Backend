@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -95,8 +96,7 @@ public class Precinct {
     public int getTotalOther(){ return totalOther; }
     public void setTotalOther(int pop){ totalOther = pop; }
 
-
-    //---------------------
+    // -----------
 
     public int getVapWhite(){ return vapWhite; }
     public void setVapWhite(int pop){ vapWhite = pop; }
@@ -119,14 +119,14 @@ public class Precinct {
     public int getVapOther(){ return vapOther; }
     public void setVapOther(int pop){ vapOther = pop; }
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "geo_id")
     public List<Neighbor> getNeighbors(){ return neighbors; }
     public void setNeighbors(List<Neighbor> neighbors){ this.neighbors = neighbors; }
 
     @Transient
     public Map<EthnicGroup,Integer> getTotalPopulations(){
-        HashMap<EthnicGroup,Integer> totalPop = new HashMap<EthnicGroup,Integer>();
+        Map<EthnicGroup,Integer> totalPop = new HashMap<EthnicGroup,Integer>();
         totalPop.put(EthnicGroup.WHITE,totalWhite);
         totalPop.put(EthnicGroup.BLACK,totalBlack);
         totalPop.put(EthnicGroup.ASIAN,totalAsian);
@@ -139,7 +139,7 @@ public class Precinct {
     
     @Transient
     public Map<EthnicGroup,Integer> getVapPopulations(){
-        HashMap<EthnicGroup,Integer> ethnicPop = new HashMap<EthnicGroup,Integer>();
+        Map<EthnicGroup,Integer> ethnicPop = new HashMap<EthnicGroup,Integer>();
         ethnicPop.put(EthnicGroup.WHITE,vapWhite);
         ethnicPop.put(EthnicGroup.BLACK,vapBlack);
         ethnicPop.put(EthnicGroup.ASIAN,vapAsian);

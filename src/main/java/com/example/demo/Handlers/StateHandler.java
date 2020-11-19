@@ -4,6 +4,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -15,7 +19,7 @@ import com.example.demo.PersistenceClasses.State;
 import com.example.demo.Repositories.StateRepository;
 @Service
 public class StateHandler{
-    private HashMap<StateName, State> states = new HashMap<>();
+    private Map<StateName, State> states = new HashMap<>();
     @Autowired
     private StateRepository stateRepository;
 
@@ -34,8 +38,9 @@ public class StateHandler{
         }
     }
 
+    @PostConstruct
     private void initStates(){
-        ArrayList<State> repoStates = (ArrayList<State>) stateRepository.findAll();
+        List<State> repoStates = (ArrayList<State>) stateRepository.findAll();
         if(repoStates.size() == 0){
             insertStates();
         }else{
@@ -49,7 +54,7 @@ public class StateHandler{
     public State getState(StateName name){
         if(states.size() == 0)
             initStates();
-
+            
         return states.get(name);
     }
 
