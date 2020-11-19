@@ -53,7 +53,7 @@ public class JobHandler {
             }else if(status == JobStatus.QUEUED || status == JobStatus.INPROGRESS){
                 job.setStatus(JobStatus.CANCELLED);
                 //Cancel on seawulf
-                repository.save(j);
+                repository.save(job);
             }
         }else{
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
@@ -78,10 +78,9 @@ public class JobHandler {
     }
 
     public Resource getJobGeo(int jobId, DistrictingType type) {
-        Optional<Job> job = repository.findById(jobId);
-        if(job.isPresent()){
-            Job j = job.get();
-            String state = (j.getState()).toString().toLowerCase();
+        Job job = getJob(jobId);
+        if(job != null){
+            String state = job.getState().toString().toLowerCase();
             Path path = Paths.get("src/main/resources/districts/"+state+"_districts.json");
             return new FileSystemResource(path);
         }else{
