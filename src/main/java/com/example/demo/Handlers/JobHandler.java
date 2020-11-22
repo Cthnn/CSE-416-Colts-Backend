@@ -53,16 +53,7 @@ public class JobHandler {
     public void cancelJob(int jobId) {
         Job job = getJob(jobId);
         if(job != null){
-            JobStatus status = job.getStatus();
-            //repository.delete(j); -- Don't delete cancelled jobs.
-            if(status == JobStatus.COMPLETED || status == JobStatus.ABORTED || status == JobStatus.CANCELLED){
-                repository.deleteById(jobId);
-                //Use information from Job object obtained from JobRepo, and delete associated files in seawulf.
-            }else if(status == JobStatus.QUEUED || status == JobStatus.INPROGRESS){
-                job.setStatus(JobStatus.CANCELLED);
-                //Cancel on seawulf
-                repository.save(job);
-            }
+            repository.delete(job);
         }else{
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }

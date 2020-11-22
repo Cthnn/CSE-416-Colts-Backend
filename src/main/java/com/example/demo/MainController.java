@@ -38,7 +38,6 @@ public class MainController{
     @PostMapping("/createJob")
     public int createJob(@RequestBody JobParams params){
         // params.put("state", stateName);
-        System.out.println(params.toString());
         return jh.createJob(params);
     }
     @PostMapping("/jobGeo")
