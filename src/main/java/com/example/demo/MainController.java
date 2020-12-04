@@ -32,14 +32,14 @@ public class MainController{
     }
     @GetMapping("/History")
     public List<Job> getHistory(){
-        // System.out.println(sh.getDemographic(StateName.ALABAMA, "G010009011").getNeighbors().size());
+        //System.out.println(sh.getDemographic(StateName.ALABAMA, "G010009011").getDemographic().getTotalPopulation());
         return jh.getHistory();
     }
     @PostMapping("/createJob")
     public int createJob(@RequestBody JobParams params){
         // params.put("state", stateName);
         System.out.println(params.toString());
-        return jh.createJob(params);
+        return jh.createJob(sh.getState(params.state).getStateId(), params);
     }
     @PostMapping("/jobGeo")
     public Resource getJobGeo(@RequestBody JobGeoParams params){
@@ -93,7 +93,7 @@ public class MainController{
         params.group = EthnicGroup.NATIVE_AMERICAN;
         params.state = StateName.VIRGINIA;
         params.pop = 0.5;
-        int jobId = jh.createJob(params);
+        int jobId = jh.createJob(sh.getState(params.state).getStateId(), params);
         jh.updateStatus(jobId, JobStatus.COMPLETED);
         return "Colts Server";
     }

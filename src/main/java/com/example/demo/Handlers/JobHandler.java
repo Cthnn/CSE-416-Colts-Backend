@@ -33,12 +33,12 @@ public class JobHandler {
         return jobs;
     }
 
-    public int createJob(JobParams params) {
+    public int createJob(int stateId, JobParams params) {
         if (repository == null) {
             System.out.println("REPO is NULL");
             return 0;
         }
-        Job j = repository.save(new Job(params.state, params.plans, params.pop, params.comp, params.group));
+        Job j = repository.save(new Job(stateId, params.plans, params.pop, params.comp, params.group));
         return j.getJobId();
     }
 
@@ -85,10 +85,11 @@ public class JobHandler {
         return null;
     }
 
+    //TODO: change to return actual file
     public Resource getJobGeo(int jobId, DistrictingType type) {
         Job job = getJob(jobId);
         if(job != null){
-            String state = job.getState().toString().toLowerCase();
+            String state = StateHandler.getState(job.getStateId()).toString().toLowerCase();
             Path path = Paths.get("src/main/resources/districts/"+state+"_districts.json");
             return new FileSystemResource(path);
         }else{

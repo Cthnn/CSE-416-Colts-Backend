@@ -15,7 +15,7 @@ public class Job {
     private int jobId;
 
     private JobStatus status;
-    private StateName state;
+    private int stateId;
 
     private int plans;
     private double populationDeviation;
@@ -26,9 +26,9 @@ public class Job {
     
     public Job() {}
 
-    public Job(StateName state, int plans, double populationDeviation, double compactness, EthnicGroup eg){
+    public Job(int id, int plans, double populationDeviation, double compactness, EthnicGroup eg){
         this.status = JobStatus.QUEUED;
-        this.state = state;
+        this.stateId = id;
         this.plans = plans;
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
@@ -52,12 +52,11 @@ public class Job {
         this.status = status;
     }
 
-    @Enumerated(EnumType.STRING)
-    public StateName getState(){
-        return state;
+    public int getStateId(){
+        return stateId;
     }
-    public void setState(StateName s){
-        state = s;
+    public void setStateId(int s){
+        stateId = s;
     }
 
     public int getPlans(){

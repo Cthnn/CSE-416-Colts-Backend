@@ -75,4 +75,17 @@ public class StateHandler{
     public Precinct getDemographic(StateName s, String precinctId){
         return states.get(s).getPrecinct(precinctId);
     }
+
+    public static StateName getState(int id){
+        switch(id){
+            case 1:
+                return StateName.ALABAMA;
+            case 12:
+                return StateName.FLORIDA;
+            case 51:
+                return StateName.VIRGINIA;
+        }
+
+        return null;
+    }
 }

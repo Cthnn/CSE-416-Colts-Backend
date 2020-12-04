@@ -44,15 +44,15 @@ public class District {
         int egPop = 0;
         for(int i = 0; i < precincts.size();i++){
             Precinct p = precincts.get(i);
-            totalPop += p.getTotalPopulation();
-            egPop += p.getVapPopulations().get(eg);
+            totalPop += p.getDemographic().getTotalPopulation();
+            egPop += p.getDemographic().getVapPopulations().get(eg);
         }
         return ((float)egPop)/totalPop;
     }
     public int getTotalPopulation(){
         int count = 0;
         for(int i = 0; i < precincts.size();i++){
-            count += precincts.get(i).getTotalPopulation();
+            count += precincts.get(i).getDemographic().getTotalPopulation();
         }
         return count;
     }
