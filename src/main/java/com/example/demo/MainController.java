@@ -38,8 +38,12 @@ public class MainController{
     @PostMapping("/createJob")
     public int createJob(@RequestBody JobParams params){
         // params.put("state", stateName);
+<<<<<<< HEAD
         System.out.println(params.toString());
         return jh.createJob(sh.getState(params.state).getStateId(), params);
+=======
+        return jh.createJob(params);
+>>>>>>> 950975d799f3f612f70b0b1609cb3cfcc4aaa0d0
     }
     @PostMapping("/jobGeo")
     public Resource getJobGeo(@RequestBody JobGeoParams params){
