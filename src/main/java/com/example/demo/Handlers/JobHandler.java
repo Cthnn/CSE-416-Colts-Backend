@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
+import com.example.demo.ServerDispatcher;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.WrapperClasses.JobParams;
@@ -39,11 +40,13 @@ public class JobHandler {
             return 0;
         }
         Job j = repository.save(new Job(stateId, params.plans, params.pop, params.comp, params.group));
+        ServerDispatcher.initiateJob(params);
         return j.getJobId();
     }
 
     public void updateStatus(int jobId, JobStatus status){
         Job job = getJob(jobId);
+        int slurmId = 0; //job.slurmId;   --NEED TO DISCUSS THIS ON MONDAY
         if(job != null){
             job.setStatus(status);
             repository.save(job);
@@ -54,6 +57,7 @@ public class JobHandler {
         Job job = getJob(jobId);
         if(job != null){
             repository.delete(job);
+            //Cancel Job on seawulf
         }else{
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }

@@ -1,0 +1,1 @@
+cat ./src/main/resources/colts_test.slurm
