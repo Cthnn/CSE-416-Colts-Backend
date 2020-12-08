@@ -1,5 +1,5 @@
 package com.example.demo.EnumClasses;
 
 public enum DistrictingType {
-    AVERAGE,EXTREME,RANDOM
+    AVERAGE,EXTREME,RANDOM,ENACTED
 }

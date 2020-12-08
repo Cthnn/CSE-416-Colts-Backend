@@ -1,34 +1,40 @@
 package com.example.demo.PersistenceClasses;
 
 import org.json.simple.JSONObject;
+
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.example.demo.EnumClasses.*;
+import com.example.demo.WrapperClasses.BoxPlotStatistic;
 @Entity
 public class Job {
     private int jobId;
 
     private JobStatus status;
-    private int stateId;
+    private State state;
 
     private int plans;
     private double populationDeviation;
     private double compactness;
     private EthnicGroup ethnicGroup;
 
-    private Districting[] districtings;
+    private List<Districting> districtings;
     
     public Job() {}
 
-    public Job(int id, int plans, double populationDeviation, double compactness, EthnicGroup eg){
+    public Job(State state, int plans, double populationDeviation, double compactness, EthnicGroup eg){
         this.status = JobStatus.QUEUED;
-        this.stateId = id;
+        this.state = state;
         this.plans = plans;
         this.populationDeviation = populationDeviation;
         this.compactness = compactness;
@@ -52,11 +58,14 @@ public class Job {
         this.status = status;
     }
 
-    public int getStateId(){
-        return stateId;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "state_id")
+    public State getState(){
+        return state;
     }
-    public void setStateId(int s){
-        stateId = s;
+    public void setState(State s){
+        state = s;
     }
 
     public int getPlans(){
@@ -90,16 +99,23 @@ public class Job {
 
     @Transient
     @JsonIgnore
-    public Districting[] getDistrictings(){
+    public List<Districting> getDistrictings(){
         return districtings;
     }
-    public void setDistrictings(Districting[] d){
+    public void setDistrictings(List<Districting> d){
         this.districtings = d;
     }
 
     @Transient
     @JsonIgnore
     public Districting getDistricting(DistrictingType type){
+        if(type == DistrictingType.AVERAGE)
+            return getAverageDistricting();
+        else if(type == DistrictingType.EXTREME)
+            return getExtremeDistricting();
+        else if(type == DistrictingType.RANDOM)
+            return getRandomDistricting();
+
         return null;
     }
     @Transient
@@ -112,33 +128,51 @@ public class Job {
     private Districting getAverageDistricting(){
         return null;
     }
-
     @Transient
     @JsonIgnore
-    private JSONObject generateGeoJson(Districting dist){
+    private Districting getRandomDistricting(){
         return null;
     }
 
-    @Transient
-    @JsonIgnore
-    public JSONObject getPrecinctGeoJson(){
-        return null;
-    }
     public JSONObject generateSummaryFile(){
         return null;
     }
 
-    private double[][] generateBoxPlot(EthnicGroup eg){
-        // dummy data
-        double [][] res = new double[10][5];
-        for(int i =0; i < res.length;i++){
-            res[i][0] = 0+((0.025)*i);
-            res[i][1] = 0.0375+((0.025)*i);
-            res[i][2] = 0.075+((0.025)*i);
-            res[i][3] = 0.1125+((0.025)*i);
-            res[i][4] = 0.15+((0.025)*i);
+    @JsonIgnore
+    @Transient
+    private double[][] getVapMatrix(EthnicGroup eg){
+        double[][] vapMatrix = new double[districtings.size()][state.getNumDistricts()];
+        for(int i=0; i < vapMatrix.length;i++){
+            vapMatrix[i] = districtings.get(i).getDistrictVAPPercentages(eg);
         }
-        return res;
+
+        return vapMatrix;
+    }
+
+    @JsonIgnore
+    @Transient
+    private double[] getVapMatrixColumn(double[][] matrix, int col){
+        double[] vaps = new double[matrix.length];
+
+        for(int i=0; i < matrix.length; i++){
+            vaps[i] = matrix[i][col];
+        }
+
+        return vaps;
+    }
+
+    private double[][] generateBoxPlot(EthnicGroup eg){
+        int numDistricts = state.getNumDistricts();
+        System.out.println("NUMDISTRICT " + numDistricts);
+        double[][] vapMatrix = getVapMatrix(eg);
+        double[][] output = new double[numDistricts][5];
+
+        for(int i=0; i < output.length;i++){
+            double[] vaps = getVapMatrixColumn(vapMatrix, i);
+            output[i] = new BoxPlotStatistic(vaps).toArray();
+        }
+
+        return output;
     }
 
     @Transient

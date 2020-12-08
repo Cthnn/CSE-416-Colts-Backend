@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.example.demo.EnumClasses.EthnicGroup;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Demographic{
@@ -94,6 +95,7 @@ public class Demographic{
     public int getVapOther(){ return vapOther; }
     public void setVapOther(int pop){ vapOther = pop; }
 
+    @JsonIgnore
     @Transient
     public Map<EthnicGroup,Integer> getTotalPopulations(){
         Map<EthnicGroup,Integer> totalPop = new HashMap<EthnicGroup,Integer>();
@@ -107,6 +109,7 @@ public class Demographic{
         return totalPop;
     }
     
+    @JsonIgnore
     @Transient
     public Map<EthnicGroup,Integer> getVapPopulations(){
         Map<EthnicGroup,Integer> ethnicPop = new HashMap<EthnicGroup,Integer>();

@@ -18,6 +18,7 @@ import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.Precinct;
 import com.example.demo.PersistenceClasses.State;
 import com.example.demo.Repositories.StateRepository;
+import com.example.demo.WrapperClasses.PathBuilder;
 @Service
 public class StateHandler{
     private Map<StateName, State> states = new HashMap<>();
@@ -27,13 +28,9 @@ public class StateHandler{
     private void insertStates(){
         int[] stateIds = {1,12,51};
         for(int i = 0; i < StateName.values().length; i++){
-            String stateName = StateName.values()[i].toString().toLowerCase();
             int id = stateIds[i];
-            String districtPath = "src/main/resources/districts/"+stateName+"_districts.json";
-            String precinctPath = "src/main/resources/precincts/"+stateName+"_precincts.json";
-            String heatmapPath = "src/main/resources/heatmaps/"+stateName+"_heatmap.json";
 
-            State state = new State(id, StateName.values()[i], districtPath, precinctPath, heatmapPath);
+            State state = new State(id, StateName.values()[i]);
             stateRepository.save(state);
             states.put(state.getStateName(), state);
         }
@@ -60,15 +57,15 @@ public class StateHandler{
     }
 
     public Resource getDistricts(StateName s){
-        Path path = Paths.get(states.get(s).getDistrictPath());
+        Path path = Paths.get(PathBuilder.getDistrictPath(s));
         return new FileSystemResource(path); 
     }
     public Resource getPrecincts(StateName s){
-        Path path = Paths.get(states.get(s).getPrecinctPath());
+        Path path = Paths.get(PathBuilder.getPrecinctPath(s));
         return new FileSystemResource(path); 
     }
     public Resource getHeatMap(StateName s){
-        Path path = Paths.get(states.get(s).getHeatMapPath());
+        Path path = Paths.get(PathBuilder.getHeatMapPath(s));
         return new FileSystemResource(path); 
     }
 

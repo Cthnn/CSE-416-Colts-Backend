@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Precinct {
     private String geoId;
@@ -27,6 +29,7 @@ public class Precinct {
     public String getGeoId(){ return geoId; }
     public void setGeoId(String id){ geoId = id; }
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "state_id")
     public State getState(){ return state; }
@@ -49,6 +52,7 @@ public class Precinct {
     public Demographic getDemographic(){ return demographic; }
     public void setDemographic(Demographic demographic) { this.demographic = demographic; }
 
+    @JsonIgnore
     @OneToMany(/*fetch = FetchType.EAGER*/)
     @JoinColumn(name = "geo_id")
     public List<Neighbor> getNeighbors(){ return neighbors; }

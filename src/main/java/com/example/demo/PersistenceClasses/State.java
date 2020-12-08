@@ -11,26 +11,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.example.demo.EnumClasses.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class State {
     private int stateId;
     private StateName state;
-    private String districtPath;
-    private String precinctPath;
-    private String heatMapPath;
+    private Districting districting;
     private Map<String, Precinct> precincts;
 
     public State(){/* needed for JPA */}
 
-    public State(int stateId, StateName state, String districtPath, String precinctPath, String heatMapPath){
+    public State(int stateId, StateName state){
         this.stateId = stateId;
         this.state = state;
-        this.districtPath = districtPath;
-        this.precinctPath = precinctPath;
-        this.heatMapPath = heatMapPath;
     }
     @Id
     public int getStateId(){
@@ -49,23 +47,14 @@ public class State {
         state = s;
     }
 
-    public String getDistrictPath(){
-        return districtPath;
+    @OneToOne
+    @JoinColumn(name = "districting_id")
+    public Districting getDistricting(){
+        return districting;
     }
-    public void setDistrictPath(String path){
-        districtPath = path;
-    }
-    public String getHeatMapPath(){
-        return heatMapPath;
-    }
-    public void setHeatMapPath(String path){
-        heatMapPath = path;
-    }
-    public String getPrecinctPath(){
-        return precinctPath;
-    }
-    public void setPrecinctPath(String path){
-        precinctPath = path;
+
+    public void setDistricting(Districting dist){
+        districting = dist;
     }
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -79,7 +68,15 @@ public class State {
         precincts = p;
     }
 
+    @JsonIgnore
+    @Transient
     public Precinct getPrecinct(String geoId){
         return precincts.get(geoId);
+    }
+
+    @JsonIgnore
+    @Transient
+    public int getNumDistricts(){
+        return districting.getDistricts().size();
     }
 }
