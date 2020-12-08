@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,7 +20,7 @@ import com.example.demo.WrapperClasses.BoxPlotStatistic;
 @Entity
 public class Job {
     private int jobId;
-
+    private int slurmId;
     private JobStatus status;
     private State state;
 
@@ -29,6 +30,11 @@ public class Job {
     private EthnicGroup ethnicGroup;
 
     private List<Districting> districtings;
+
+    private double[][] vapMatrix;
+    private double[][] boxPlotValues;
+    private Districting averageDistricting;
+    private Districting extremeDistricting;
     
     public Job() {}
 
@@ -48,6 +54,14 @@ public class Job {
     }
     public void setJobId(int jobId){
         this.jobId = jobId;
+    }
+
+    public int getSlurmId(){
+        return slurmId;
+    }
+
+    public void setSlurmId(int id){
+        slurmId = id;
     }
 
     @Enumerated(EnumType.STRING)
@@ -101,36 +115,85 @@ public class Job {
     public List<Districting> getDistrictings(){
         return districtings;
     }
+    
     public void setDistrictings(List<Districting> d){
         this.districtings = d;
     }
 
-    @Transient
     @JsonIgnore
-    public Districting getDistricting(DistrictingType type){
-        if(type == DistrictingType.AVERAGE)
-            return getAverageDistricting();
-        else if(type == DistrictingType.EXTREME)
-            return getExtremeDistricting();
-        else if(type == DistrictingType.RANDOM)
-            return getRandomDistricting();
-
-        return null;
-    }
-    @Transient
-    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "extreme_districting_id", referencedColumnName="districting_id")
     private Districting getExtremeDistricting(){
-        return null;
+        return extremeDistricting;
     }
-    @Transient
+
+    public void setExtremeDistricting(Districting dist) {
+        extremeDistricting = dist;
+    }
+
     @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "average_districting_id", referencedColumnName="districting_id")
     private Districting getAverageDistricting(){
-        return null;
+        return averageDistricting;
     }
+
+    public void setAverageDistricting(Districting dist){
+        averageDistricting = dist;
+    }
+
     @Transient
     @JsonIgnore
     private Districting getRandomDistricting(){
         return null;
+    }
+
+
+
+    public void initDistrictings(List<Districting> d){
+        setDistrictings(d);
+        getBoxPlotValues();
+        generateDisplayDistrictings();
+    }
+
+    public void generateDisplayDistrictings(){
+        double[] averageDistricting = getMatrixColumn(boxPlotValues, 2);
+        double[] vapDifferences = new double[vapMatrix.length];
+        for(int i = 0; i < vapMatrix.length; i++){
+            vapDifferences[i] = districtingVapDifference(vapMatrix[i], averageDistricting);
+        }
+
+        int minIndex = 0;
+        double min = vapDifferences[0];
+        int extremeIndex = 0;
+        double extreme = vapDifferences[0];
+
+        for(int i = 0; i < vapDifferences.length; i++){
+            if(vapDifferences[i] < min){
+                min = vapDifferences[i];
+                minIndex = i;
+            }
+            if(vapDifferences[i] > extreme){
+                extreme = vapDifferences[i];
+                extremeIndex = i;
+            }
+        }
+        
+        Districting minDistricting = districtings.get(minIndex);
+        Districting extremeDistricting = districtings.get(extremeIndex);
+        minDistricting.setType(DistrictingType.AVERAGE);
+        extremeDistricting.setType(DistrictingType.EXTREME);
+        setAverageDistricting(minDistricting);
+        setExtremeDistricting(extremeDistricting);
+    }
+
+    private double districtingVapDifference(double[] vap1, double[] vap2){
+        double sum = 0;
+        for(int i = 0; i < vap1.length; i++){
+            sum += (vap1[i] - vap2[i]);
+        }
+
+        return sum/vap1.length;
     }
 
     public JSONObject generateSummaryFile(){
@@ -140,9 +203,12 @@ public class Job {
     @JsonIgnore
     @Transient
     private double[][] getVapMatrix(EthnicGroup eg){
-        double[][] vapMatrix = new double[districtings.size()][state.getNumDistricts()];
-        for(int i=0; i < vapMatrix.length;i++){
-            vapMatrix[i] = districtings.get(i).getDistrictVAPPercentages(eg);
+        if(vapMatrix == null){
+            double[][] matrix = new double[districtings.size()][state.getNumDistricts()];
+            for(int i=0; i < matrix.length;i++){
+                matrix[i] = districtings.get(i).getDistrictVAPPercentages(eg);
+            }
+            vapMatrix = matrix;
         }
 
         return vapMatrix;
@@ -150,7 +216,7 @@ public class Job {
 
     @JsonIgnore
     @Transient
-    private double[] getVapMatrixColumn(double[][] matrix, int col){
+    private double[] getMatrixColumn(double[][] matrix, int col){
         double[] vaps = new double[matrix.length];
 
         for(int i=0; i < matrix.length; i++){
@@ -167,7 +233,7 @@ public class Job {
         double[][] output = new double[numDistricts][5];
 
         for(int i=0; i < output.length;i++){
-            double[] vaps = getVapMatrixColumn(vapMatrix, i);
+            double[] vaps = getMatrixColumn(vapMatrix, i);
             output[i] = new BoxPlotStatistic(vaps).toArray();
         }
 
@@ -177,7 +243,9 @@ public class Job {
     @Transient
     @JsonIgnore
     public double[][] getBoxPlotValues(){
-        return generateBoxPlot(ethnicGroup);
+        if(boxPlotValues == null)
+            boxPlotValues = generateBoxPlot(ethnicGroup);
+        return boxPlotValues;
     }
 
 }

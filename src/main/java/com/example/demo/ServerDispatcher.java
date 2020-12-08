@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import com.example.demo.PersistenceClasses.Job;
 public class ServerDispatcher {
     private static int thresh = 0;
-    public static void initiateJob(Job j){
+    public static int initiateJob(Job j){
         //Edit the slurm script based on params
         if (j.getPlans() > thresh){
             try{
@@ -24,11 +24,14 @@ public class ServerDispatcher {
                 String[] arr = result.split(" ");
                 int slurmId = Integer.parseInt(arr[arr.length-1]);
                 System.out.println(slurmId);
+                return slurmId;
             }catch(Exception e){
                 System.out.println(e);
+                return -1;
             }
         }else{
             //Run Locally
+            return -1;
         }
     }
 }

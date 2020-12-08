@@ -89,20 +89,18 @@ public class MainController{
     }
     @GetMapping("/")
     public void home(){
-        JSONArray jobJSON = SeawulfHelper.getDistrictings(2);
-        List<Districting> districtings = jh.createDistrictings(jobJSON, sh.getState(StateName.ALABAMA));
+        Job j = new Job();
+        j.setJobId(2);
+        j.setState(sh.getState(StateName.ALABAMA));
+        j.setEthnicGroup(EthnicGroup.ASIAN);
+        List<Districting> districtings = jh.initJobDistrictings(j);
+        
         for(Districting dist: districtings){
             System.out.println("ds: " + dist.getDistricts().size());
             for(District d: dist.getDistricts()){
                 System.out.println("d " + d.getDistrictId() + " : "+ d.getPrecincts().size());
             }
         }
-
-        Job j = new Job();
-        j.setDistrictings(districtings);
-        j.setState(sh.getState(StateName.ALABAMA));
-        j.setEthnicGroup(EthnicGroup.ASIAN);
-        j.setJobId(2);
         double[][] out = j.getBoxPlotValues();
         System.out.println("BOXPLOT");
         for(int i =0; i < out.length; i++){

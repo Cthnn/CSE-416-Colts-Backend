@@ -46,8 +46,11 @@ public class JobHandler {
         for (int i = 0; i < repoJobs.size(); i++) {
             Job j = repoJobs.get(i);
             jobs.put(j.getJobId(), j);
-        }
 
+            // if(j.getStatus() == JobStatus.COMPLETED){
+            //     initJobDistrictings(j);
+            // }
+        }
     }
 
     public Job getJob(int jobId) {
@@ -72,10 +75,15 @@ public class JobHandler {
             System.out.println("REPO is NULL");
             return 0;
         }
-
-        Job j = repository.save(new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group));
+        
+        Job j = new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group);
+        j = repository.save(j);
         jobs.put(j.getJobId(), j);
-        ServerDispatcher.initiateJob(j);
+        int slurmId = ServerDispatcher.initiateJob(j);
+        if(slurmId >= 0){
+            j.setSlurmId(slurmId);
+            repository.save(j);
+        }
         return j.getJobId();
     }
 
@@ -191,6 +199,12 @@ public class JobHandler {
         return districtings;
     }
 
+    public List<Districting> initJobDistrictings(Job j){
+        JSONArray jobJSON = SeawulfHelper.getDistrictings(j.getJobId());
+        List<Districting> districtings = createDistrictings(jobJSON, j.getState());
+        j.initDistrictings(districtings);
+        return districtings;
+    }
 
     //TODO: check every few minutes
     private void checkCompleteJobs(){
@@ -209,9 +223,8 @@ public class JobHandler {
                 }
 
                 if(status == JobStatus.COMPLETED){
-                    JSONArray jobJSON = SeawulfHelper.getDistrictings(jobId);
-                    List<Districting> districtings = createDistrictings(jobJSON, j.getState());
-                    j.setDistrictings(districtings);
+                    initJobDistrictings(j);
+                    repository.save(j);
                 }
             }
         }
