@@ -53,7 +53,7 @@ public class Precinct {
     public void setDemographic(Demographic demographic) { this.demographic = demographic; }
 
     @JsonIgnore
-    @OneToMany(/*fetch = FetchType.EAGER*/)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "geo_id")
     public List<Neighbor> getNeighbors(){ return neighbors; }
     public void setNeighbors(List<Neighbor> neighbors){ this.neighbors = neighbors; }

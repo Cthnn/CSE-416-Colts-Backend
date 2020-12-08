@@ -68,6 +68,7 @@ public class District {
         this.precincts = precincts;
     }
 
+    @JsonIgnore
     @Transient
     public double getVAPPercentage(EthnicGroup eg){
         int totalPop = 0;
@@ -79,7 +80,7 @@ public class District {
         }
         return ((double)egPop)/totalPop;
     }
-
+    
     @Transient
     public int getTotalPopulation(){
         int count = 0;

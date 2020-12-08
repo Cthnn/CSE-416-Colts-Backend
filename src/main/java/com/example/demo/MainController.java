@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,13 +11,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.PersistenceClasses.*;
-import com.example.demo.Repositories.DistrictingRepository;
 import com.example.demo.WrapperClasses.*;
 import com.example.demo.Handlers.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 @RestController
@@ -29,8 +26,6 @@ public class MainController{
     @Autowired
     public StateHandler sh;
     private State state;
-    @Autowired
-    private DistrictingRepository repo;
 
     @PostMapping("/state")
     public String setState(@RequestBody StateName s){

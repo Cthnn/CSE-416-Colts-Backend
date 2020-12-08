@@ -1,6 +1,5 @@
 package com.example.demo.Handlers;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.SeawulfHelper;
+import com.example.demo.ServerDispatcher;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.WrapperClasses.JobParams;
@@ -73,7 +73,7 @@ public class JobHandler {
 
         Job j = repository.save(new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group));
         jobs.put(j.getJobId(), j);
-        SeawulfHelper.queue(j);
+        ServerDispatcher.initiateJob(j);
         return j.getJobId();
     }
 
@@ -89,6 +89,7 @@ public class JobHandler {
         Job job = getJob(jobId);
         if (job != null) {
             repository.delete(job);
+            jobs.remove(job.getJobId());
         } else {
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }
@@ -131,19 +132,16 @@ public class JobHandler {
             e1.printStackTrace();
             return null;
         }
-        System.out.println(fileOutput);
-
-        // TODO: use python script here
-        ObjectMapper mapper = new ObjectMapper();
+        
         try {
+            ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(districtingFile.toFile(), dist);
             StateName state = job.getState().getStateName();
             ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getPythonScript(), "" + job.getJobId(),
                 state.toString(), PathBuilder.getPrecinctPath(state), districtingFile.toString(), fileOutput);
             builder.redirectErrorStream(true);
             
-            Process process = builder.inheritIO().start();
-            System.out.print("ENDED");
+            builder.inheritIO().start();
             return fileOutput;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
