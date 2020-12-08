@@ -1,12 +1,14 @@
 package com.example.demo.PersistenceClasses;
+
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,7 +24,7 @@ public class Precinct {
     private String precinctName;
 
     private Demographic demographic;
-    private List<Neighbor> neighbors;
+    private List<Precinct> neighbors;
 
     @Id
     @Column(name = "geo_id")
@@ -53,8 +55,12 @@ public class Precinct {
     public void setDemographic(Demographic demographic) { this.demographic = demographic; }
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "geo_id")
-    public List<Neighbor> getNeighbors(){ return neighbors; }
-    public void setNeighbors(List<Neighbor> neighbors){ this.neighbors = neighbors; }
+    @ManyToMany(/*fetch = FetchType.EAGER*/)
+    @JoinTable(
+        name = "neighbor",
+        joinColumns = @JoinColumn(name = "geo_id"),
+        inverseJoinColumns = @JoinColumn(name = "neighbor_id")
+    )
+    public List<Precinct> getNeighbors(){ return neighbors; }
+    public void setNeighbors(List<Precinct> neighbors){ this.neighbors = neighbors; }
 }
