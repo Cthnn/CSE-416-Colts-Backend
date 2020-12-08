@@ -47,6 +47,7 @@ public class State {
         state = s;
     }
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "districting_id")
     public Districting getDistricting(){
@@ -57,6 +58,7 @@ public class State {
         districting = dist;
     }
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "state_id")
     @MapKey(name = "geoId")

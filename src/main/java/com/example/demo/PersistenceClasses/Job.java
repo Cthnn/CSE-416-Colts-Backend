@@ -58,7 +58,6 @@ public class Job {
         this.status = status;
     }
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "state_id")
     public State getState(){

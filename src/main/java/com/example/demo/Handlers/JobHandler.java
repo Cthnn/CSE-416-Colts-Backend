@@ -61,6 +61,8 @@ public class JobHandler {
     }
 
     public List<Job> getHistory() {
+        if(jobs.size() > 0)
+            return new ArrayList<Job>(jobs.values());
         List<Job> jobs = (ArrayList<Job>) repository.findAll();
         return jobs;
     }
