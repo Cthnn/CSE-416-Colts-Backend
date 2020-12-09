@@ -1,0 +1,1 @@
+sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'cd /gpfs/home/etcheung/CSE416/Colts/Jobs;rm -r 100'

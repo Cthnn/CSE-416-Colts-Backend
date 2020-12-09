@@ -79,11 +79,17 @@ public class JobHandler {
         Job j = new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group);
         j = repository.save(j);
         jobs.put(j.getJobId(), j);
-        int slurmId = ServerDispatcher.initiateJob(j);
-        if(slurmId >= 0){
-            j.setSlurmId(slurmId);
-            repository.save(j);
+        try{
+            int slurmId = ServerDispatcher.initiateJob(j);
+            if(slurmId >= 0){
+                j.setSlurmId(slurmId);
+                repository.save(j);
+            }
+        }catch(Exception e){
+            System.out.println("Job could not be queue'd");
+            //Set the job to aborted??
         }
+        
         return j.getJobId();
     }
 
@@ -100,6 +106,12 @@ public class JobHandler {
         if (job != null) {
             repository.delete(job);
             jobs.remove(job.getJobId());
+            try{
+                ServerDispatcher.cancelJob(job.getSlurmId());
+                SeawulfHelper.removeFiles(jobId);
+            }catch(Exception e){
+                System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
+            }
         } else {
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }
@@ -211,13 +223,13 @@ public class JobHandler {
         for(int jobId : jobs.keySet()){
             Job j = getJob(jobId);
             if(j.getStatus() == JobStatus.QUEUED){
-                JobStatus status = SeawulfHelper.getStatus(jobId);
+                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
                 if(status != JobStatus.QUEUED){
                     updateStatus(jobId, status);
                 }
             }
             else if(j.getStatus() == JobStatus.INPROGRESS){
-                JobStatus status = SeawulfHelper.getStatus(jobId);
+                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
                 if(status != JobStatus.INPROGRESS){
                     updateStatus(jobId, status);
                 }

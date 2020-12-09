@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name=colts_test
+#SBATCH --job-name=colts_redistrict
 #SBATCH --output=colts_test.log
 #SBATCH --ntasks-per-node=30
 #SBATCH --nodes=1
@@ -9,7 +9,5 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=ethan.cheung@stonybrook.edu
 
-module load python
-
-python /gpfs/projects/CSE416/Colts/test.py
-
+module load python 
+python /gpfs/projects/CSE416/Colts/algo.py

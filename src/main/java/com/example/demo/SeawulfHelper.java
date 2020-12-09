@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.apache.catalina.Server;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,10 +16,12 @@ import com.example.demo.EnumClasses.*;
 
 public class SeawulfHelper {
     public static JSONObject queue(Job j) {
+        //Probably not necessary for now
         return new JSONObject();
     }
 
     public static JSONObject sendFile(JSONObject data) {
+        //Probably not necessary for now
         return new JSONObject();
     }
 
@@ -33,16 +36,27 @@ public class SeawulfHelper {
         }
         return new JSONArray();
     }
-    public static JobStatus getStatus(int jobId){
-        return JobStatus.COMPLETED;
+    public static JobStatus getStatus(int slurmId){
+        try{
+            JobStatus status = ServerDispatcher.seawulfStatus(slurmId);
+            return status;
+        }catch (IOException e){
+            System.out.println(e);
+            return null;
+        }
     }
     public static JSONObject getGeoJSON(int jobId, DistrictingType type){
+        //Probably not necessary for now
         return new JSONObject();
     }
-    public static JSONObject abortInProgress(int jobId){
-        return new JSONObject();
+    public static void abortInProgress(int jobId){
+        //Same as cancel
     }
-    public static JSONObject removeFiles(int jobId){
-        return new JSONObject();
+    public static void removeFiles(int jobId){
+        try{
+            ServerDispatcher.removeFiles(jobId);
+        }catch(Exception e){
+            System.out.println("could not remove files");
+        }        
     }
 }
