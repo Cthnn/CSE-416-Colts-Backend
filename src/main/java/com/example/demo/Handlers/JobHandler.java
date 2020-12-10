@@ -5,11 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,56 +32,57 @@ import org.springframework.core.io.Resource;
 
 @Service
 public class JobHandler {
-    private Map<Integer, Job> jobs = new HashMap<>();
+    private List<Job> jobs = new ArrayList<>();
     @Autowired
-    private JobRepository repository;
+    private JobRepository jobRepo;
+    @Autowired
+    private DistrictingRepository districtingRepo;
+    @Autowired
+    private DistrictRepository districtRepo;
     @Autowired
     public StateHandler sh;
 
     @PostConstruct
     private void initJobs() {
-        List<Job> repoJobs = (ArrayList<Job>) repository.findAll();
-        for (int i = 0; i < repoJobs.size(); i++) {
-            Job j = repoJobs.get(i);
-            jobs.put(j.getJobId(), j);
-
-            // if(j.getStatus() == JobStatus.COMPLETED){
-            //     initJobDistrictings(j);
-            // }
+        jobs = (ArrayList<Job>) jobRepo.findAll();
+        for(Job j : jobs){
+            initJobDistrictings(j);
         }
     }
 
     public Job getJob(int jobId) {
-        Job j = jobs.get(jobId);
-        if (j == null) {
-            Optional<Job> job = repository.findById(jobId);
-            if (job.isPresent())
-                return job.get();
+        for(Job j : jobs){
+            if(j.getJobId() == jobId)
+                return j;
         }
+        Optional<Job> job = jobRepo.findById(jobId);
+        if (job.isPresent())
+            return job.get();
+        
         return null;
     }
 
     public List<Job> getHistory() {
         if(jobs.size() > 0)
-            return new ArrayList<Job>(jobs.values());
-        List<Job> jobs = (ArrayList<Job>) repository.findAll();
+            return jobs;
+        List<Job> jobs = (ArrayList<Job>) jobRepo.findAll();
         return jobs;
     }
 
     public int createJob(JobParams params) {
-        if (repository == null) {
+        if (jobRepo == null) {
             System.out.println("REPO is NULL");
             return 0;
         }
         
         Job j = new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group);
-        j = repository.save(j);
-        jobs.put(j.getJobId(), j);
+        j = jobRepo.save(j);
+        jobs.add(j);
         try{
             int slurmId = ServerDispatcher.initiateJob(j);
             if(slurmId >= 0){
                 j.setSlurmId(slurmId);
-                repository.save(j);
+                jobRepo.save(j);
             }
         }catch(Exception e){
             System.out.println("Job could not be queue'd");
@@ -97,7 +96,7 @@ public class JobHandler {
         Job job = getJob(jobId);
         if (job != null) {
             job.setStatus(status);
-            repository.save(job);
+            jobRepo.save(job);
         }
     }
 
@@ -105,16 +104,16 @@ public class JobHandler {
     public void updateStatus(Job job, JobStatus status) {
         if (job != null) {
             job.setStatus(status);
-            repository.save(job);
-            jobs.put(job.getJobId(), job);
+            saveJob(job);
+            jobs.add(job);
         }
     }
 
     public void cancelJob(int jobId) {
         Job job = getJob(jobId);
         if (job != null) {
-            repository.delete(job);
-            jobs.remove(job.getJobId());
+            jobRepo.delete(job);
+            jobs.remove(job);
             try{
                 ServerDispatcher.cancelJob(job.getSlurmId());
                 SeawulfHelper.removeFiles(jobId);
@@ -127,7 +126,7 @@ public class JobHandler {
     }
 
     public List<Job> getStatuses(Integer[] jobIds) {
-        List<Job> jobs = (ArrayList<Job>) repository.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
+        List<Job> jobs = (ArrayList<Job>) jobRepo.findAllById((Iterable<Integer>) Arrays.asList(jobIds));
         return jobs;
     }
 
@@ -147,7 +146,7 @@ public class JobHandler {
     public Resource getJobGeo(int jobId, DistrictingType type) {
         Job job = getJob(jobId);
         if (job != null) {
-            return new FileSystemResource(PathBuilder.getDistrictPath(job.getState().getStateName()));
+            return new FileSystemResource(PathBuilder.getJobDistrictPath(jobId, type));
         } else {
             System.out.println("ERROR: Job does not exist with id: " + jobId);
             return null;
@@ -202,7 +201,6 @@ public class JobHandler {
             JSONObject obj = iterator.next();
             JSONArray precinctJSON = (JSONArray) obj.get("precincts");
             district.setPrecincts(createPrecincts(precinctJSON, state));
-            district.setDistrictId(Math.toIntExact((Long)obj.get("id")));
             districts.add(district);
         }
         return districts;
@@ -222,30 +220,51 @@ public class JobHandler {
 
     public List<Districting> initJobDistrictings(Job j){
         JSONArray jobJSON = SeawulfHelper.getDistrictings(j.getJobId());
+        if(jobJSON == null)
+            return new ArrayList<Districting>();
         List<Districting> districtings = createDistrictings(jobJSON, j.getState());
         j.initDistrictings(districtings);
         return districtings;
     }
 
+    public void saveJob(Job j){
+        saveDistricting(j.getAverageDistricting());
+        saveDistricting(j.getExtremeDistricting());
+        jobRepo.save(j);
+    }
+
+    public int saveDistricting(Districting districting){
+        Set<District> districts = districting.getDistricts();
+        districting.setDistricts(null);
+        districting = districtingRepo.save(districting);
+        System.out.println("Saved districting with id: " + districting.getDistrictingId());
+        for(District d : districts){
+            d.setDistrictingId(districting.getDistrictingId());
+            d = districtRepo.save(d);
+            System.out.println("Saved district with id: " + d.getDistrictId());
+        }
+        districting.setDistricts(districts);
+        return districting.getDistrictingId();
+    }
+
     //TODO: check every few minutes
     private void checkCompleteJobs(){
-        for(int jobId : jobs.keySet()){
-            Job j = getJob(jobId);
+        for(Job j : jobs){
             if(j.getStatus() == JobStatus.QUEUED){
                 JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
                 if(status != JobStatus.QUEUED){
-                    updateStatus(jobId, status);
+                    updateStatus(j.getJobId(), status);
                 }
             }
             else if(j.getStatus() == JobStatus.INPROGRESS){
                 JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
                 if(status != JobStatus.INPROGRESS){
-                    updateStatus(jobId, status);
+                    updateStatus(j.getJobId(), status);
                 }
 
                 if(status == JobStatus.COMPLETED){
                     initJobDistrictings(j);
-                    repository.save(j);
+                    saveJob(j);
                 }
             }
         }

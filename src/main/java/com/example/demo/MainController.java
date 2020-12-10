@@ -50,6 +50,8 @@ public class MainController {
 
     @PostMapping("/jobGeo")
     public Resource getJobGeo(@RequestBody JobGeoParams params) {
+        System.out.println("Sending job geo");
+        System.out.println(params.jobId + " " + params.type.toString());
         return jh.getJobGeo(params.jobId, params.type);
     }
 
@@ -72,7 +74,12 @@ public class MainController {
 
     @PostMapping("/getBoxPlot")
     public double[][] getBoxPlot(@RequestBody int jobId) {
-        return jh.getBoxPlot(jobId);
+        System.out.println("BOXPLOT FOR " + jobId);
+        double[][] out = jh.getBoxPlot(jobId);
+        for(int i =0; i < out.length; i++){
+            System.out.println(Arrays.toString(out[i]));
+        }
+        return out;
     }
 
     @PostMapping("/district")
@@ -125,11 +132,11 @@ public class MainController {
         //     e.printStackTrace();
         // }
         List<Districting> districtings = jh.initJobDistrictings(j);
-        // jh.updateStatus(j, JobStatus.COMPLETED);
+        //jh.updateStatus(j, JobStatus.COMPLETED);
         for(Districting dist: districtings){
             System.out.println("ds: " + dist.getDistricts().size());
             for(District d: dist.getDistricts()){
-                System.out.println("d " + d.getDistrictId() + " : "+ d.getPrecincts().size());
+                System.out.println("d " + d.getDisplayNumber() + " : "+ d.getPrecincts().size());
             }
         }
         double[][] out = j.getBoxPlotValues();

@@ -32,9 +32,9 @@ public class SeawulfHelper {
             System.out.println("READ JSON FROM FILE");
             return obj;
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            
         }
-        return new JSONArray();
+        return null;
     }
     public static JobStatus getStatus(int slurmId){
         try{
