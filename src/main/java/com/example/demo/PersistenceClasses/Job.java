@@ -123,7 +123,7 @@ public class Job {
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "extreme_districting_id", referencedColumnName="districting_id")
-    private Districting getExtremeDistricting(){
+    public Districting getExtremeDistricting(){
         return extremeDistricting;
     }
 
@@ -134,7 +134,7 @@ public class Job {
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "average_districting_id", referencedColumnName="districting_id")
-    private Districting getAverageDistricting(){
+    public Districting getAverageDistricting(){
         return averageDistricting;
     }
 

@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.util.Map;
 import com.example.demo.EnumClasses.JobStatus;
 import com.example.demo.PersistenceClasses.Job;
+import com.example.demo.WrapperClasses.AlgorithmInputs;
+import com.example.demo.WrapperClasses.PathBuilder;
 public class ServerDispatcher {
-    private static int thresh = 0;
+    private static int thresh = 20;
     private static Map<String,JobStatus> statusMapping= Map.ofEntries(Map.entry("BOOT_FAIL",JobStatus.ABORTED),
         Map.entry("CANCELLED",JobStatus.CANCELLED),Map.entry("COMPLETED",JobStatus.COMPLETED),Map.entry("CONFIGURING",JobStatus.QUEUED),
         Map.entry("COMPLETING",JobStatus.INPROGRESS),Map.entry("DEADLINE",JobStatus.ABORTED),Map.entry("FAILED",JobStatus.ABORTED),
@@ -18,11 +20,13 @@ public class ServerDispatcher {
         Map.entry("REVOKED",JobStatus.INPROGRESS),Map.entry("SIGNALING",JobStatus.INPROGRESS),Map.entry("SPECIAL_EXIT",JobStatus.INPROGRESS),
         Map.entry("STAGE_OUT",JobStatus.INPROGRESS),Map.entry("STOPPED",JobStatus.ABORTED),Map.entry("SUSPENDED",JobStatus.ABORTED),Map.entry("TIMEOUT",JobStatus.ABORTED));
     public static int initiateJob(Job j)throws IOException{
+        boolean local = j.getPlans() <= thresh;
+        AlgorithmInputs inputs = new AlgorithmInputs(j, local);
         //Edit the slurm script based on params
         int tasks = 30;
         int nodes = 1;
         String time = "00:05:00";
-        if (j.getPlans() > thresh){
+        if (!local){
             String fn = "src/main/resources/colts_redistrict.slurm";
             String txt = "#!/usr/bin/env bash\n\n#SBATCH --job-name=colts_redistrict\n#SBATCH --output=colts_test.log\n#SBATCH --ntasks-per-node="+tasks+"\n#SBATCH --nodes="+nodes+"\n#SBATCH --time="+time+"\n#SBATCH -p short-40core\n#SBATCH --mail-type=BEGIN,END\n#SBATCH --mail-user=ethan.cheung@stonybrook.edu\n\nmodule load python \npython /gpfs/projects/CSE416/Colts/algo.py";
             ServerDispatcher.editFile(fn, txt);
@@ -35,10 +39,24 @@ public class ServerDispatcher {
             System.out.println(slurmId);
             return slurmId;
         }else{
-            //Run Locally
+            initiateJobLocally(inputs);
             return -1;
         }
     }
+    private static void initiateJobLocally(AlgorithmInputs inputs){
+        try {
+            ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getAlgorithmScript(), 
+            inputs.targetDistricts, inputs.maxIterations, inputs.plans, inputs.compactness, inputs.populationDeviation, 
+            inputs.inputFile, inputs.outputFile);
+
+            builder.redirectErrorStream(true);
+            builder.inheritIO().start();
+            System.out.println("Started algorithm");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static JobStatus seawulfStatus(int slurmId)throws IOException{
         String filename = "src/main/resources/status.sh";
         String text = "sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh;module load slurm;scontrol show job "+slurmId+"'";

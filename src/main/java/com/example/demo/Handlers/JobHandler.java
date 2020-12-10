@@ -101,6 +101,15 @@ public class JobHandler {
         }
     }
 
+    //FOR TESTING ONLY
+    public void updateStatus(Job job, JobStatus status) {
+        if (job != null) {
+            job.setStatus(status);
+            repository.save(job);
+            jobs.put(job.getJobId(), job);
+        }
+    }
+
     public void cancelJob(int jobId) {
         Job job = getJob(jobId);
         if (job != null) {

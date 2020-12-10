@@ -14,13 +14,14 @@ import com.example.demo.PersistenceClasses.*;
 import com.example.demo.WrapperClasses.*;
 import com.example.demo.Handlers.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @RestController
 @CrossOrigin
-public class MainController{
+public class MainController {
     @Autowired
     public JobHandler jh;
     @Autowired
@@ -28,86 +29,103 @@ public class MainController{
     private State state;
 
     @PostMapping("/state")
-    public String setState(@RequestBody StateName s){
+    public String setState(@RequestBody StateName s) {
         System.out.println("Setting state: " + s.toString());
         state = sh.getState(s);
         return "setState Success";
     }
+
     @GetMapping("/History")
-    public List<Job> getHistory(){
-        //System.out.println(sh.getDemographic(StateName.ALABAMA, "G010009011").getDemographic().getTotalPopulation());
+    public List<Job> getHistory() {
+        // System.out.println(sh.getDemographic(StateName.ALABAMA,
+        // "G010009011").getDemographic().getTotalPopulation());
         return jh.getHistory();
     }
+
     @PostMapping("/createJob")
-    public int createJob(@RequestBody JobParams params){
+    public int createJob(@RequestBody JobParams params) {
         // params.put("state", stateName);
         return jh.createJob(params);
     }
+
     @PostMapping("/jobGeo")
-    public Resource getJobGeo(@RequestBody JobGeoParams params){
-        return jh.getJobGeo(params.jobId,params.type);
+    public Resource getJobGeo(@RequestBody JobGeoParams params) {
+        return jh.getJobGeo(params.jobId, params.type);
     }
+
     @PostMapping("/cancel")
-    public String cancelJob(@RequestBody int jobId){
+    public String cancelJob(@RequestBody int jobId) {
         jh.cancelJob(jobId);
         return "200 OK";
     }
+
     @PostMapping("/statuses")
-    public List<Job> getStatuses(@RequestBody int[] jobIds){
-        Integer[] convertedIds = IntStream.of(jobIds).boxed().toArray( Integer[]::new );
+    public List<Job> getStatuses(@RequestBody int[] jobIds) {
+        Integer[] convertedIds = IntStream.of(jobIds).boxed().toArray(Integer[]::new);
         return jh.getStatuses(convertedIds);
     }
+
     @PostMapping("/getSummary")
-    public Resource getSummary(@RequestBody int jobId){
+    public Resource getSummary(@RequestBody int jobId) {
         return jh.getSummary(jobId);
     }
+
     @PostMapping("/getBoxPlot")
-    public double[][] getBoxPlot(@RequestBody int jobId){
+    public double[][] getBoxPlot(@RequestBody int jobId) {
         return jh.getBoxPlot(jobId);
     }
+
     @PostMapping("/district")
     @ResponseBody
-    public Resource getDistrict(@RequestBody StateName s){
+    public Resource getDistrict(@RequestBody StateName s) {
         System.out.println("Sending District data");
         return sh.getDistricts(s);
     }
+
     @PostMapping("/precinct")
     @ResponseBody
-    public Resource getPrecinct(@RequestBody StateName s){
+    public Resource getPrecinct(@RequestBody StateName s) {
         System.out.println("Sending Precinct data");
         return sh.getPrecincts(s);
     }
+
     @PostMapping("/demographic")
-    public Precinct getDemographic(@RequestBody DemographicParams params){
+    public Precinct getDemographic(@RequestBody DemographicParams params) {
         return sh.getDemographic(params.state, params.precinctId);
     }
-    @PostMapping("/heatmap")
-    @ResponseBody
-    public Resource getHeatMap(@RequestBody StateName s){
-        System.out.println("Sending HeatMap data");
-        return sh.getHeatMap(s);
-    }
+
     @GetMapping("/test")
-    public void test(){
-        try{
-            //ServerDispatcher.cancelJob(412228);
+    public void test() {
+        try {
+            // ServerDispatcher.cancelJob(412228);
             ServerDispatcher.retrieveResults(100);
             System.out.println("Successful Retrieval");
             ServerDispatcher.removeFiles(100);
             System.out.println("Successful Removal");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Unsuccesful");
         }
-        //SeawulfHelper.getStatus(412157);
+        // SeawulfHelper.getStatus(412157);
     }
+
     @GetMapping("/")
-    public void home(){
+    public void home() {
         Job j = new Job();
-        j.setJobId(2);
+        j.setJobId(3);
+        j.setCompactness(0.5);
+        j.setPopulationDeviation(0.5);
+        j.setPlans(8);
         j.setState(sh.getState(StateName.ALABAMA));
         j.setEthnicGroup(EthnicGroup.ASIAN);
+
+        // try {
+        //     int slurmId = ServerDispatcher.initiateJob(j);
+        //     System.out.println(slurmId);
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
         List<Districting> districtings = jh.initJobDistrictings(j);
-        
+        // jh.updateStatus(j, JobStatus.COMPLETED);
         for(Districting dist: districtings){
             System.out.println("ds: " + dist.getDistricts().size());
             for(District d: dist.getDistricts()){
@@ -120,8 +138,8 @@ public class MainController{
             System.out.println(Arrays.toString(out[i]));
         }
 
-        // jh.generateGeoJson(j,DistrictingType.AVERAGE,districtings.get(0));
-
+        jh.generateGeoJson(j,DistrictingType.AVERAGE,j.getAverageDistricting());
+        jh.generateGeoJson(j,DistrictingType.EXTREME,j.getExtremeDistricting());
 
         // Districting dist = sh.getState(StateName.ALABAMA).getDistricting();
         // System.out.println(dist.getDistrictingId());
