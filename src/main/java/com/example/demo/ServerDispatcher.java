@@ -23,12 +23,11 @@ public class ServerDispatcher {
         boolean local = j.getPlans() <= thresh;
         AlgorithmInputs inputs = new AlgorithmInputs(j, local);
         //Edit the slurm script based on params
-        int tasks = 30;
-        int nodes = 1;
-        String time = "00:05:00";
         if (!local){
+            String state = j.getState().getStateName().name().toLowerCase();
+            String capState = state.substring(0,1).toUpperCase() + state.substring(1);
             String fn = "src/main/resources/colts_redistrict.slurm";
-            String txt = "#!/usr/bin/env bash\n\n#SBATCH --job-name=colts_redistrict\n#SBATCH --output=colts_test.log\n#SBATCH --ntasks-per-node="+tasks+"\n#SBATCH --nodes="+nodes+"\n#SBATCH --time="+time+"\n#SBATCH -p short-40core\n#SBATCH --mail-type=BEGIN,END\n#SBATCH --mail-user=ethan.cheung@stonybrook.edu\n\nmodule load python \npython /gpfs/projects/CSE416/Colts/algo.py";
+            String txt = "#!/usr/bin/env bash\n\n#SBATCH --job-name=colts_batch"+j.getJobId()+"\n#SBATCH --output="+j.getJobId()+".log\n#SBATCH --ntasks-per-node=40\n#SBATCH --nodes=2\n#SBATCH --time=96:00:00\n#SBATCH -p extended-40core\n#SBATCH --mail-type=BEGIN,END\n#SBATCH --mail-user=ethan.cheung@stonybrook.edu\n\nmodule load anaconda/3 \nmodule load mpi4py\n\nmpirun -np 1200 --oversubscribe python /gpfs/projects/CSE416/Colts/algo.py "+j.getState().getNumDistricts()+" 1000000 "+ j.getPlans() + " "+ j.getCompactness()+" "+j.getPopulationDeviation()+" /gpfs/home/etcheung/CSE416/Colts/data/"+capState+"_Input.json /gpfs/home/etcheung/CSE416/Colts/Jobs/"+j.getJobId()+"/results.json";
             ServerDispatcher.editFile(fn, txt);
             fn = "src/main/resources/trigger.sh";
             txt = "sudo scp -i ./src/main/resources/cthan_key ./src/main/resources/colts_redistrict.slurm etcheung@login.seawulf.stonybrook.edu:/gpfs/projects/CSE416/Colts\nsudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh;module load slurm; cd /gpfs/home/etcheung/CSE416/Colts/Jobs;mkdir "+j.getJobId()+";cd /gpfs/projects/CSE416/Colts;sbatch colts_redistrict.slurm'";
