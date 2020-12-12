@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -67,11 +68,6 @@ public class MainController {
         return jh.getStatuses(convertedIds);
     }
 
-    @PostMapping("/getSummary")
-    public Resource getSummary(@RequestBody int jobId) {
-        return jh.getSummary(jobId);
-    }
-
     @PostMapping("/getBoxPlot")
     public double[][] getBoxPlot(@RequestBody int jobId) {
         System.out.println("BOXPLOT FOR " + jobId);
@@ -99,6 +95,11 @@ public class MainController {
     @PostMapping("/demographic")
     public Precinct getDemographic(@RequestBody DemographicParams params) {
         return sh.getDemographic(params.state, params.precinctId);
+    }
+
+    @GetMapping("/summary/{jobId}")
+    public Resource getSummary(@PathVariable("jobId") int jobId) {
+        return jh.getSummary(jobId);
     }
 
     @GetMapping("/test")
