@@ -130,16 +130,21 @@ public class JobHandler {
         return jobs;
     }
 
-    public Resource getSummary(int jobId) {
-        // create the job summary json
-        return null;
-    }
-
     public double[][] getBoxPlot(int jobId) {
         Job job = getJob(jobId);
         if (job != null)
             return job.getBoxPlotValues();
         return null;
+    }
+
+    public Resource getSummary(int jobId) {
+        Job job = getJob(jobId);
+        if (job != null) {
+            return new FileSystemResource(PathBuilder.getJobSummary(jobId));
+        } else {
+            System.out.println("ERROR: Job does not exist with id: " + jobId);
+            return null;
+        }
     }
 
     // TODO: change to return actual file
@@ -181,6 +186,25 @@ public class JobHandler {
         return null;
     }
 
+    public String generateSummary(Job job){
+        String fileOutput = PathBuilder.getJobSummary(job.getJobId());
+        try {
+            String state = job.getState().getStateName().toString();
+            String eg = job.getEthnicGroup().toString();
+            ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getSummaryScript(), ""+job.getJobId(),
+                state.toString(), ""+job.getCompactness(), ""+job.getPopulationDeviation(), eg, 
+                ""+job.getAverageDistrictingIndex(), ""+job.getExtremeDistrictingIndex(), fileOutput);
+    
+            builder.redirectErrorStream(true);
+            builder.inheritIO().start();
+            return fileOutput;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     private List<Precinct> createPrecincts(JSONArray precinctJSON, State state){
         List<Precinct> precincts = new ArrayList<Precinct>();
@@ -201,6 +225,7 @@ public class JobHandler {
             JSONObject obj = iterator.next();
             JSONArray precinctJSON = (JSONArray) obj.get("precincts");
             district.setPrecincts(createPrecincts(precinctJSON, state));
+            district.setIndex(Math.toIntExact((Long)obj.get("id")));
             districts.add(district);
         }
         return districts;

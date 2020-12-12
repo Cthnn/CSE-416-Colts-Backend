@@ -35,6 +35,9 @@ public class Job {
     private double[][] boxPlotValues;
     private Districting averageDistricting;
     private Districting extremeDistricting;
+
+    private int averageDistrictingIndex;
+    private int extremeDistrictingIndex;
     
     public Job() {}
 
@@ -144,11 +147,23 @@ public class Job {
 
     @Transient
     @JsonIgnore
-    private Districting getRandomDistricting(){
-        return null;
+    public int getAverageDistrictingIndex(){
+        return averageDistrictingIndex;
     }
 
+    public void setAverageDistrictingIndex(int index) {
+        averageDistrictingIndex = index;
+    }
 
+    @Transient
+    @JsonIgnore
+    public int getExtremeDistrictingIndex(){
+        return extremeDistrictingIndex;
+    }
+
+    public void setExtremeDistrictingIndex(int index) {
+        extremeDistrictingIndex = index;
+    }
 
     public void initDistrictings(List<Districting> d){
         setDistrictings(d);
@@ -183,6 +198,8 @@ public class Job {
         Districting extremeDistricting = districtings.get(extremeIndex);
         minDistricting.setType(DistrictingType.AVERAGE);
         extremeDistricting.setType(DistrictingType.EXTREME);
+        setAverageDistrictingIndex(minIndex);
+        setExtremeDistrictingIndex(extremeIndex);
         setAverageDistricting(minDistricting);
         setExtremeDistricting(extremeDistricting);
     }

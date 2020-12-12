@@ -42,6 +42,7 @@ def getPrecinctGeo(precinctID, precinctGeoJson):
 def initProperties(districtId):
     properties = {}
     properties["ID"] = districtId
+    properties["INDEX"] = 0
     properties["TOTAL"] = 0
     properties["T2"] = 0
     properties["T3"] = 0
@@ -58,6 +59,8 @@ def initProperties(districtId):
     properties["R6"] = 0
     properties["R7"] = 0
     properties["R8"] = 0
+    properties["UNIQUE_COUNTIES"] = 0
+    properties["NEIGHBORS"] = []
     return properties
 
 
@@ -78,6 +81,12 @@ def addDemographicData(properties, geoProps):
     properties["R6"] += geoProps["R6"]
     properties["R7"] += geoProps["R7"]
     properties["R8"] += geoProps["R8"]
+
+def setNeighbors(districtPolygons, districtProperties):
+    for districtId in districtPolygons.keys():
+        for neighborId in districtPolygons.keys():
+            if(districtId != neighborId and districtPolygons[districtId].intersects(districtPolygons[neighborId])):
+                districtProperties[districtId]["NEIGHBORS"].append(neighborId)
 
 jobId = sys.argv[1]
 state = sys.argv[2].lower()
@@ -100,10 +109,11 @@ with open(precincts_file_name) as f:
 
 for district in districts:
     districtId = district['displayNumber']
+    index = district['index']
     districtPrecincts = district['precincts']
     districtPolygon = None
     properties = initProperties(districtId)
-    
+    counties = []
     for precinct in districtPrecincts:
         precinctId = precinct['geoId']
         geo, geoProps = getPrecinctGeo(precinctId, precinctGeoJson)
@@ -115,8 +125,11 @@ for district in districts:
             else:
                 districtPolygon = districtPolygon.union(getPolygon(geo))
             addDemographicData(properties, geoProps)
-
+            counties.append(geoProps['COUNTY_ID'])
+    properties["UNIQUE_COUNTIES"] = len(set(counties))
+    properties["INDEX"] = index
     districtPolygons[districtId] = districtPolygon
     districtProperties[districtId] = properties
 
+setNeighbors(districtPolygons, districtProperties)
 writeFile(state, polygonsToGeoJson(districtPolygons, districtProperties), output_file_name)

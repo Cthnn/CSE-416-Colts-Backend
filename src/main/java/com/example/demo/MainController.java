@@ -117,22 +117,26 @@ public class MainController {
 
     @GetMapping("/")
     public void home() {
-        Job j = new Job();
-        j.setJobId(3);
-        j.setCompactness(0.5);
-        j.setPopulationDeviation(0.5);
-        j.setPlans(8);
-        j.setState(sh.getState(StateName.ALABAMA));
-        j.setEthnicGroup(EthnicGroup.ASIAN);
+        // Job j = new Job();
+        // j.setJobId(3);
+        // j.setCompactness(0.5);
+        // j.setPopulationDeviation(0.5);
+        // j.setPlans(8);
+        // j.setState(sh.getState(StateName.ALABAMA));
+        // j.setEthnicGroup(EthnicGroup.ASIAN);
 
-        // try {
-        //     int slurmId = ServerDispatcher.initiateJob(j);
-        //     System.out.println(slurmId);
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
-        List<Districting> districtings = jh.initJobDistrictings(j);
+        // // try {
+        // //     int slurmId = ServerDispatcher.initiateJob(j);
+        // //     System.out.println(slurmId);
+        // // } catch (IOException e) {
+        // //     e.printStackTrace();
+        // // }
+        // List<Districting> districtings = jh.initJobDistrictings(j);
         //jh.updateStatus(j, JobStatus.COMPLETED);
+        Job j = jh.getJob(3);
+        List<Districting> districtings = j.getDistrictings();
+        System.out.println("averageIndex" + j.getAverageDistrictingIndex());
+        System.out.println("extremeIndex" + j.getExtremeDistrictingIndex());
         for(Districting dist: districtings){
             System.out.println("ds: " + dist.getDistricts().size());
             for(District d: dist.getDistricts()){
@@ -145,9 +149,10 @@ public class MainController {
             System.out.println(Arrays.toString(out[i]));
         }
 
-        jh.generateGeoJson(j,DistrictingType.AVERAGE,j.getAverageDistricting());
-        jh.generateGeoJson(j,DistrictingType.EXTREME,j.getExtremeDistricting());
+        // jh.generateGeoJson(j,DistrictingType.AVERAGE,j.getAverageDistricting());
+        // jh.generateGeoJson(j,DistrictingType.EXTREME,j.getExtremeDistricting());
 
+        //jh.generateSummary(j);
         // Districting dist = sh.getState(StateName.ALABAMA).getDistricting();
         // System.out.println(dist.getDistrictingId());
 

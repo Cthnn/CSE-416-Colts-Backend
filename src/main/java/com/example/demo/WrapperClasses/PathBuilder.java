@@ -18,14 +18,18 @@ public class PathBuilder {
     public static String getJobPath(int jobId){
         return "src/main/resources/jobs/"+jobId+"_districtings.json";
     }
+    public static String getJobSummary(int jobId){
+        return "src/main/resources/summaries/"+jobId+"_summary.json";
+    }
     public static String getPythonScript(){
         return "src/main/resources/scripts/union.py";
     }
-
+    public static String getSummaryScript(){
+        return "src/main/resources/scripts/summary.py";
+    }
     public static String getAlgorithmScript(){
         return "src/main/resources/scripts/algorithm.py";
     }
-
     public static String getAlgorithmInput(StateName state){
         return "src/main/resources/algorithm_input/"+state.toString().toLowerCase()+"_input.json";
     }

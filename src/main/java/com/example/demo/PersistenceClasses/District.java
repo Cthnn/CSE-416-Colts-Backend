@@ -23,6 +23,7 @@ public class District {
     private int districtId;
     private int districtingId;
     private int displayNumber;
+    private int index;
     private List<Precinct> precincts;
 
     public District() {}
@@ -53,6 +54,14 @@ public class District {
     }
     public void setDisplayNumber(int num){
         displayNumber = num;
+    }
+
+    @Transient
+    public int getIndex(){
+        return index;
+    }
+    public void setIndex(int num){
+        index = num;
     }
     
     @ManyToMany(fetch = FetchType.EAGER)
