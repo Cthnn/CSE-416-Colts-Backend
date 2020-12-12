@@ -3,6 +3,8 @@ import json
 from disjoint_set import DisjointSet
 import math
 import sys
+import cProfile
+
 
 class Precinct:
     precinct_id: None
@@ -14,12 +16,10 @@ class Precinct:
 class District:
     def __init__(self, p=None):
         self.district_precincts = [p]
-        if p == None:
+        if not p:
             self.district_precincts = []
         self.edges = []
-
-    district_precincts: []
-    edges: []
+        self.is_acceptable = False
 
 
 # returns the sub_graph that contains the precinct
@@ -263,6 +263,11 @@ number_of_plans = None
 compactness = None
 population_deviation = None
 
+precinct_dict = {}  # maps precinct ids to precincts
+district_dict = {}  # maps precincts ids to districts
+
+population_range = None
+
 target_districts = int(sys.argv[1])
 max_iterations = int(sys.argv[2])
 number_of_plans = int(sys.argv[3])
@@ -283,174 +288,185 @@ print(sys.argv)
 #         compactness = float(s[1])
 #     if s[0] == 'population_deviation:':
 #         population_deviation = float(s[1])
-districtings = []
-fit_critera = 0
-improvements = 0
-no_improvements = 0
-for runNumber in range(number_of_plans):
-    iteratations = max_iterations
-    print("starting run number ", runNumber)
-    precincts = []  # list of all precincts
-    districts = []  # list  of all sub-graphs/districts
-
-    f = open(input_file_name, 'r')
-    data = f.read()
-    # print(data)
-    data = json.loads(data)
-    total_population = 0
-    average_district_population = 0
-    for precinct in data:
-        p = Precinct()
-        p.precinct_id = precinct['GEOID']
-        p.total = precinct['TOTAL']
-        p.vap_total = precinct['VAP_TOTAL']
-        p.neighbor_precincts = precinct['NEIGHBORS']
-        if len(p.neighbor_precincts) > 0:
-            precincts.append(p)
-            total_population += p.vap_total
-    average_district_population = int(total_population / target_districts)
-    deviation = int(average_district_population * population_deviation / 2)
-    population_range = average_district_population - deviation, average_district_population + deviation + 1
-
-    precinct_dict = {}  # maps precinct ids to precincts
-    district_dict = {}  # maps precincts ids to districts
 
 
+def run_algorithm():
+    districtings = []
+    fit_critera = 0
+    improvements = 0
+    no_improvements = 0
+    for runNumber in range(number_of_plans):
+        iteratations = max_iterations
+        print("starting run number ", runNumber)
+        precincts = []  # list of all precincts
+        districts = []  # list  of all sub-graphs/districts
 
-    # make each precinct its own sub-graph
-    for precinct in precincts:
-        districts.append(District(precinct))
-        precinct_dict[precinct.precinct_id] = precinct
+        f = open(input_file_name, 'r')
+        data = f.read()
+        # print(data)
+        data = json.loads(data)
+        total_population = 0
+        average_district_population = 0
+        for precinct in data:
+            p = Precinct()
+            p.precinct_id = precinct['GEOID']
+            p.total = precinct['TOTAL']
+            p.vap_total = precinct['VAP_TOTAL']
+            p.neighbor_precincts = precinct['NEIGHBORS']
+            if len(p.neighbor_precincts) > 0:
+                precincts.append(p)
+                total_population += p.vap_total
+        average_district_population = int(total_population / target_districts)
+        deviation = int(average_district_population * population_deviation / 2)
+        global population_range
+        population_range = average_district_population - deviation, average_district_population + deviation + 1
 
-    for district in districts:
-        precinct = district.district_precincts[0]
-        district_dict[precinct.precinct_id] = district
-
-    # print('precinct_dict:', precinct_dict)
 
 
-    # generate seed districting
-    districts = random.sample(districts, len(districts))
-    while len(districts) > target_districts:
-        district = districts[0]
-        neighbor_sub_graph = find_neighbor_sub_graph(district)
-        # print(district)
-        # print(neighbor_sub_graph)
-        districts.remove(district)
-        districts.remove(neighbor_sub_graph)
-        combined_sub_graph = combine_sub_graphs(district, neighbor_sub_graph)
-        districts.append(combined_sub_graph)
-        rehash(combined_sub_graph)
 
-    # district = districts[i]
-    # neighbor_sub_graph = find_neighbor_sub_graph(district)
-    # d = combine_sub_graphs(district, neighbor_sub_graph)
-    # districts.remove(district)
-    # districts.remove(neighbor_sub_graph)
-    # districts.append(d)
-    # rehash(d)
+        # make each precinct its own sub-graph
+        for precinct in precincts:
+            districts.append(District(precinct))
+            precinct_dict[precinct.precinct_id] = precinct
 
-    print('seed districts created')
-    # print('seed districts:', districts)
-    districting = []
-    i = 0
-    for district in districts:
-        districting.append({})
-        districting[i]['id'] = i + 1
-        districting[i]['precincts'] = [precinct.precinct_id for precinct in district.district_precincts]
-        i += 1
+        for district in districts:
+            precinct = district.district_precincts[0]
+            district_dict[precinct.precinct_id] = district
 
-    for district in districting:
-        print(district)
-    # exit()
+        # print('precinct_dict:', precinct_dict)
 
-    # improve districting
-    running = True
-    while running:
-        i = random.randint(0, len(districts) - 1)  # choose a random district
-        district = districts[i]
-        # spanning_tree = generate_spanning_tree(district)
-        neighbor_sub_graph = find_neighbor_sub_graph(district)
-        combined_sub_graph = combine_sub_graphs(district, neighbor_sub_graph)
-        spanning_tree = generate_spanning_tree(combined_sub_graph)
-        population_district = calculate_district_total_population(district)
-        population_neighbor = calculate_district_total_population(neighbor_sub_graph)
 
-        testArray = []
-        for edge in random.sample(spanning_tree, len(spanning_tree)):
-            if(edge in testArray):
-                print("DUPLICATE EDGE")
-            else:
-                testArray.append(edge)
-            # print('testing edge:', edge)
-            sub_graphs = cut_edge(edge, spanning_tree, combined_sub_graph)
-            sub_graph1 = sub_graphs[0]
-            sub_graph2 = sub_graphs[1]
-            if len(sub_graph1.district_precincts) == 0 or len(sub_graph2.district_precincts) == 0:
-                continue
+        # generate seed districting
+        districts = random.sample(districts, len(districts))
+        while len(districts) > target_districts:
+            district = districts[0]
+            neighbor_sub_graph = find_neighbor_sub_graph(district)
+            # print(district)
+            # print(neighbor_sub_graph)
             districts.remove(district)
             districts.remove(neighbor_sub_graph)
-            districts.append(sub_graph1)
-            districts.append(sub_graph2)
-            rehash(sub_graph1)
-            rehash(sub_graph2)
+            combined_sub_graph = combine_sub_graphs(district, neighbor_sub_graph)
+            districts.append(combined_sub_graph)
+            rehash(combined_sub_graph)
 
-            population1 = calculate_district_total_population(sub_graph1)
-            population2 = (population_district + population_neighbor) - population1
+        print('seed districts created')
+        # print('seed districts:', districts)
+        districting = []
+        i = 0
+        for district in districts:
+            district.is_acceptable = is_acceptable(district)
+            districting.append({})
+            districting[i]['id'] = i + 1
+            districting[i]['precincts'] = [precinct.precinct_id for precinct in district.district_precincts]
+            i += 1
 
-            compactness1 = calculate_compactness(sub_graph1)
-            compactness2 = calculate_compactness(sub_graph2)
-            if compactness1 <= compactness and compactness2 <= compactness and population1 >= population_range[0] and \
-                    population1 <= population_range[1] and population2 >= population_range[0] and \
-                    population2 <= population_range[1]:
-                print('subgraphs fit critera')
-                fit_critera += 1
+        for district in districting:
+            print(district)
+        # exit()
+
+        # improve districting
+        running = True
+        while running:
+            found_feasible_edge = True
+            i = random.randint(0, len(districts) - 1)  # choose a random district
+            district = districts[i]
+            neighbor_sub_graph = find_neighbor_sub_graph(district)
+            combined_sub_graph = combine_sub_graphs(district, neighbor_sub_graph)
+            if district.is_acceptable and neighbor_sub_graph.is_acceptable:
+                continue
+            spanning_tree = generate_spanning_tree(combined_sub_graph)
+            population_district = calculate_district_total_population(district)
+            population_neighbor = calculate_district_total_population(neighbor_sub_graph)
+
+            testArray = []
+            for edge in random.sample(spanning_tree, len(spanning_tree)):
+                if(edge in testArray):
+                    print("DUPLICATE EDGE")
+                else:
+                    testArray.append(edge)
+                # print('testing edge:', edge)
+                sub_graphs = cut_edge(edge, spanning_tree, combined_sub_graph)
+                sub_graph1 = sub_graphs[0]
+                sub_graph2 = sub_graphs[1]
+                # if len(sub_graph1.district_precincts) == 0 or len(sub_graph2.district_precincts) == 0:
+                #     continue
+                rehash(sub_graph1)
+                rehash(sub_graph2)
+
+                population1 = calculate_district_total_population(sub_graph1)
+                population2 = (population_district + population_neighbor) - population1
+
+                compactness1 = calculate_compactness(sub_graph1)
+                compactness2 = calculate_compactness(sub_graph2)
+                if compactness1 <= compactness and compactness2 <= compactness and population1 >= population_range[0] and \
+                        population1 <= population_range[1] and population2 >= population_range[0] and \
+                        population2 <= population_range[1]:
+                    print('subgraphs fit critera')
+                    fit_critera += 1
+                    districts.remove(district)
+                    districts.remove(neighbor_sub_graph)
+                    districts.append(sub_graph1)
+                    districts.append(sub_graph2)
+                    sub_graph1.is_acceptable = True
+                    sub_graph2.is_acceptable = True
+                    break
+                if abs(population1 - average_district_population) <= \
+                        abs(population_district - average_district_population) and \
+                        abs(population2 - average_district_population)  <= \
+                        abs(population_neighbor - average_district_population):
+                    print('subgraphs improve but do not fit critera')
+                    improvements += 1
+                    districts.remove(district)
+                    districts.remove(neighbor_sub_graph)
+                    districts.append(sub_graph1)
+                    districts.append(sub_graph2)
+                    break
+                rehash(district)
+                rehash(neighbor_sub_graph)
+                no_improvements += 1
+                found_feasible_edge = False
                 break
-            if abs(population1 - average_district_population) <= \
-                    abs(population_district - average_district_population) and \
-                    abs(population2 - average_district_population)  <= \
-                    abs(population_neighbor - average_district_population):
-                print('subgraphs improve but do not fit critera')
-                improvements += 1
-                break
-            districts.remove(sub_graph1)
-            districts.remove(sub_graph2)
-            districts.append(district)
-            districts.append(neighbor_sub_graph)
-            rehash(district)
-            rehash(neighbor_sub_graph)
-            no_improvements += 1
-        # check for termination conditions
-        # running = False
-        # for district in districts:
-        #     if not is_acceptable(district):
-        #         running = True
 
-        iteratations -= 1
-        print(iteratations)
-        if iteratations == 0:
+            # check for termination conditions
             running = False
+            for district in districts:
+                if not district.is_acceptable:
+                    running = True
 
-    print(len(districts), districts)
+            if found_feasible_edge:
+                iteratations -= 1
+                print(iteratations)
+            if iteratations == 0:
+                running = False
 
-    districting = {'districts': []}
-    i = 0
-    for district in districts:
-        districting['districts'].append({})
-        districting['districts'][i]['id'] = i + 1
-        districting['districts'][i]['precincts'] = [precinct.precinct_id for precinct in district.district_precincts]
-        i += 1
+        print(len(districts), districts)
 
-    districtings.append(districting)
+        districting = {'districts': []}
+        i = 0
+        for district in districts:
+            districting['districts'].append({})
+            districting['districts'][i]['id'] = i + 1
+            districting['districts'][i]['precincts'] = [precinct.precinct_id for precinct in district.district_precincts]
+            i += 1
 
-# for district in districting:
-#     print(district)
+        districtings.append(districting)
 
-print('writing to file')
-with open(output_file_name, 'w+') as f:
-    json.dump(districtings, f, indent=2)
+        for district in districting['districts']:
+            print(district)
 
-print("Edges that fit critera: ", fit_critera)
-print("Edges that improve: ", improvements)
-print("Edges that do not improve: ", no_improvements)
-print("Total: ", (fit_critera + improvements + no_improvements))
+    print('writing to file')
+    with open(output_file_name, 'w+') as f:
+        json.dump(districtings, f, indent=2)
+
+    print("Edges that fit critera: ", fit_critera)
+    print("Edges that improve: ", improvements)
+    print("Edges that do not improve: ", no_improvements)
+    print("Total: ", (fit_critera + improvements + no_improvements))
+
+
+def main():
+    run_algorithm()
+
+
+if __name__ == '__main__':
+    cProfile.run('main()', 'output.dat')
