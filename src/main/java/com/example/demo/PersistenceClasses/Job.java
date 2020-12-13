@@ -122,7 +122,7 @@ public class Job {
     public void setDistrictings(List<Districting> d){
         this.districtings = d;
     }
-
+    @Transient
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "extreme_districting_id", referencedColumnName="districting_id")
@@ -133,7 +133,7 @@ public class Job {
     public void setExtremeDistricting(Districting dist) {
         extremeDistricting = dist;
     }
-
+    @Transient
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "average_districting_id", referencedColumnName="districting_id")
