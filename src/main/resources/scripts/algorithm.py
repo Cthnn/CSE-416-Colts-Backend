@@ -57,7 +57,6 @@ def combine_sub_graphs(district1, district2):
     d = District()
     d.district_precincts = district1.district_precincts + district2.district_precincts
     d.edges = district1.edges + district2.edges
-    add_edges(d)
     return d
 
 
@@ -70,6 +69,7 @@ def have_common_edge(graph1, graph2):
 
 
 def generate_spanning_tree(district):  # use modified Kruskal's Algorithm
+    add_edges(district)
     edges = random.sample(district.edges, len(district.edges))
     nodes = [precinct.precinct_id for precinct in district.district_precincts]
     spanning_tree = []
@@ -101,7 +101,6 @@ def build_sub_graph(nodes):
         d.district_precincts.append(precinct_dict[node])
     # print('checking for duplicates in subgraphs:')
     # print('dups:', [item for item, count in collections.Counter(d.district_precincts).items() if count > 1])
-    add_edges(d)
     return d
 
 
@@ -356,4 +355,4 @@ def main():
 
 
 if __name__ == '__main__':
-    cProfile.run('main()', 'output.dat')
+    cProfile.run('main()')
