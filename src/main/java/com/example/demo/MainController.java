@@ -58,6 +58,7 @@ public class MainController {
 
     @PostMapping("/cancel")
     public String cancelJob(@RequestBody int jobId) {
+        System.out.println("Cancel/Delete "+ jobId);
         jh.cancelJob(jobId);
         return "200 OK";
     }
