@@ -23,6 +23,7 @@ import com.example.demo.SeawulfHelper;
 import com.example.demo.ServerDispatcher;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
+import com.example.demo.WrapperClasses.BoxPlotData;
 import com.example.demo.WrapperClasses.DeleteThread;
 import com.example.demo.WrapperClasses.JobParams;
 import com.example.demo.WrapperClasses.JobThread;
@@ -117,12 +118,19 @@ public class JobHandler {
         return jobs;
     }
 
-    public double[][] getBoxPlot(int jobId) {
+	public BoxPlotData getBoxPlotData(int jobId) {
         Job job = getJob(jobId);
-        if (job != null)
-            return job.getBoxPlotValues();
-        return null;
-    }
+        if(job != null){
+            BoxPlotData output = new BoxPlotData();
+            output.summaryData = job.getBoxPlotValues();
+            output.enactedData = job.getState().getDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            output.averageData = job.getAverageDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            output.extremeData = job.getExtremeDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            return output;
+        }
+            
+		return null;
+	}
 
     public Resource getSummary(int jobId) {
         Job job = getJob(jobId);
@@ -310,6 +318,4 @@ public class JobHandler {
             }
         }
     }
-
-
 }

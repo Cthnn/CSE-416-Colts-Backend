@@ -70,11 +70,11 @@ public class MainController {
     }
 
     @PostMapping("/getBoxPlot")
-    public double[][] getBoxPlot(@RequestBody int jobId) {
+    public BoxPlotData getBoxPlot(@RequestBody int jobId) {
         System.out.println("BOXPLOT FOR " + jobId);
-        double[][] out = jh.getBoxPlot(jobId);
-        for(int i =0; i < out.length; i++){
-            System.out.println(Arrays.toString(out[i]));
+        BoxPlotData out= jh.getBoxPlotData(jobId);
+        for(int i =0; i < out.summaryData.length; i++){
+            System.out.println(Arrays.toString(out.summaryData[i]));
         }
         return out;
     }
