@@ -23,6 +23,7 @@ import com.example.demo.SeawulfHelper;
 import com.example.demo.ServerDispatcher;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
+import com.example.demo.WrapperClasses.DeleteThread;
 import com.example.demo.WrapperClasses.JobParams;
 import com.example.demo.WrapperClasses.JobThread;
 import com.example.demo.WrapperClasses.PathBuilder;
@@ -101,14 +102,11 @@ public class JobHandler {
     public void cancelJob(int jobId) {
         Job job = getJob(jobId);
         if (job != null) {
-            jobRepo.delete(job);
             jobs.remove(job);
-            try{
-                ServerDispatcher.cancelJob(job.getSlurmId());
-                SeawulfHelper.removeFiles(jobId);
-            }catch(Exception e){
-                System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
-            }
+            System.out.println("Removed from Jobs");
+            DeleteThread dt = new DeleteThread(job,jobRepo);
+            Thread t = new Thread(dt);
+            t.start();
         } else {
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + jobId);
         }
@@ -305,7 +303,6 @@ public class JobHandler {
 
                 if(status == JobStatus.COMPLETED){
                     initJobDistrictings(j);
-                    //saveJob(j);
                 }
             }
         }
