@@ -250,8 +250,8 @@ def run_algorithm():
             districting[i]['precincts'] = [precinct.precinct_id for precinct in district.district_precincts]
             i += 1
 
-        for district in districting:
-            print(district)
+        # for district in districting:
+        #     print(district)
 
         # improve districting
         running = True
@@ -340,7 +340,7 @@ def run_algorithm():
         for district in districting['districts']:
             print(district)
 
-    print('writing to file')
+    print('writing to file', output_file_name)
     with open(output_file_name, 'w+') as f:
         json.dump(districtings, f, indent=2)
 

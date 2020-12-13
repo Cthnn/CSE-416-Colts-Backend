@@ -128,10 +128,14 @@ public class JobHandler {
 
     public Resource getSummary(int jobId) {
         Job job = getJob(jobId);
-        if (job != null) {
+        if (job != null  && job.getStatus() == JobStatus.COMPLETED) {
+            File f = new File(PathBuilder.getJobSummary(jobId));
+            if(!f.exists()){
+                generateSummary(job);
+            }
             return new FileSystemResource(PathBuilder.getJobSummary(jobId));
         } else {
-            System.out.println("ERROR: Job does not exist with id: " + jobId);
+            System.out.println("ERROR: Job does not exist or is not completed: " + jobId);
             return null;
         }
     }
@@ -139,10 +143,18 @@ public class JobHandler {
     // TODO: change to return actual file
     public Resource getJobGeo(int jobId, DistrictingType type) {
         Job job = getJob(jobId);
-        if (job != null) {
+        if (job != null && job.getStatus() == JobStatus.COMPLETED) {
+            File f = new File(PathBuilder.getJobDistrictPath(jobId, type));
+            if(!f.exists()){
+                System.out.println("creating geojson file");
+                if(type == DistrictingType.AVERAGE)
+                    generateGeoJson(job, type, job.getAverageDistricting());
+                else generateGeoJson(job, type, job.getExtremeDistricting());
+            }
+            System.out.println("sending geojson file");
             return new FileSystemResource(PathBuilder.getJobDistrictPath(jobId, type));
         } else {
-            System.out.println("ERROR: Job does not exist with id: " + jobId);
+            System.out.println("ERROR: Job does not exist or is not completed: " + jobId);
             return null;
         }
     }
@@ -165,11 +177,9 @@ public class JobHandler {
                 state.toString(), PathBuilder.getPrecinctPath(state), districtingFile.toString(), fileOutput);
             builder.redirectErrorStream(true);
             
-            builder.inheritIO().start();
+            builder.inheritIO().start().waitFor();
             return fileOutput;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -185,9 +195,9 @@ public class JobHandler {
                 ""+job.getAverageDistrictingIndex(), ""+job.getExtremeDistrictingIndex(), fileOutput);
     
             builder.redirectErrorStream(true);
-            builder.inheritIO().start();
+            builder.inheritIO().start().waitFor();
             return fileOutput;
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -264,7 +274,6 @@ public class JobHandler {
         return districting.getDistrictingId();
     }
 
-
     public void checkCompleteJobs(){
         for(Job j : jobs){
             System.out.println("Job: " +j.getJobId() + " , Slurm: "+ j.getSlurmId());
@@ -296,7 +305,7 @@ public class JobHandler {
 
                 if(status == JobStatus.COMPLETED){
                     initJobDistrictings(j);
-                    saveJob(j);
+                    //saveJob(j);
                 }
             }
         }
