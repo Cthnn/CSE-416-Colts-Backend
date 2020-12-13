@@ -304,7 +304,7 @@ public class JobHandler {
                 if(status == JobStatus.COMPLETED){
                     initJobDistrictings(j);
                     generateGeoJson(j, DistrictingType.AVERAGE, j.getAverageDistricting());
-                    generateGeoJson(j, DistrictingType.EXTREME, j.getAverageDistricting());
+                    generateGeoJson(j, DistrictingType.EXTREME, j.getExtremeDistricting());
                     //saveJob(j);
                 }
             }
