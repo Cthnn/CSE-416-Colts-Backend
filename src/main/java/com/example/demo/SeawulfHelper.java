@@ -40,9 +40,9 @@ public class SeawulfHelper {
         }
         return null;
     }
-    public static JobStatus getStatus(int slurmId,int jobId){
+    public static JobStatus getStatus(int slurmId,int jobId, JobStatus jobStatus){
         try{
-            JobStatus status = ServerDispatcher.seawulfStatus(slurmId, jobId);
+            JobStatus status = ServerDispatcher.seawulfStatus(slurmId, jobId,jobStatus);
             return status;
         }catch (IOException e){
             System.out.println(e);

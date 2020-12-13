@@ -1,0 +1,1 @@
+sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'echo "true"'
