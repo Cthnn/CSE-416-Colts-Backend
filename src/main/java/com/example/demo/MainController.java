@@ -105,11 +105,12 @@ public class MainController {
     @GetMapping("/test")
     public void test() {
         try {
-            // ServerDispatcher.cancelJob(412228);
-            ServerDispatcher.retrieveResults(2);
-            System.out.println("Successful Retrieval");
-            // ServerDispatcher.removeFiles(100);
-            // System.out.println("Successful Removal");
+            ServerDispatcher.seawulfStatus(415418,134);
+            // // ServerDispatcher.cancelJob(412228);
+            // ServerDispatcher.retrieveResults(2);
+            // System.out.println("Successful Retrieval");
+            // // ServerDispatcher.removeFiles(100);
+            // // System.out.println("Successful Removal");
         } catch (Exception e) {
             System.out.println("Unsuccesful");
         }

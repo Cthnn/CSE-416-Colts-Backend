@@ -19,7 +19,7 @@ import com.example.demo.EnumClasses.*;
 import com.example.demo.WrapperClasses.BoxPlotStatistic;
 @Entity
 public class Job {
-    private int jobId;
+    private Integer jobId;
     private int slurmId;
     private JobStatus status;
     private State state;
@@ -52,10 +52,10 @@ public class Job {
 
     @Id 
     @GeneratedValue
-    public int getJobId(){
+    public Integer getJobId(){
         return jobId;
     }
-    public void setJobId(int jobId){
+    public void setJobId(Integer jobId){
         this.jobId = jobId;
     }
 

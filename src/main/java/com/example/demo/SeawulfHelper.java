@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 import com.example.demo.PersistenceClasses.*;
 import com.example.demo.WrapperClasses.PathBuilder;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -25,20 +26,23 @@ public class SeawulfHelper {
         return new JSONObject();
     }
 
-    public static JSONArray getDistrictings(int jobId) {
+    public static JSONArray getDistrictings(Job j) {
         JSONParser parser = new JSONParser();
         try {
-            JSONArray obj = (JSONArray) parser.parse(new FileReader(PathBuilder.getJobPath(jobId)));
+            File f = new File(PathBuilder.getJobPath(j.getJobId()));
+            if(j.getSlurmId() > 0 && j.getStatus() == JobStatus.COMPLETED && !f.exists()){
+                ServerDispatcher.retrieveResults(j.getJobId());
+            }
+            JSONArray obj = (JSONArray) parser.parse(new FileReader(PathBuilder.getJobPath(j.getJobId())));
             System.out.println("READ JSON FROM FILE");
             return obj;
         } catch (IOException | ParseException e) {
-            
         }
         return null;
     }
-    public static JobStatus getStatus(int slurmId){
+    public static JobStatus getStatus(int slurmId,int jobId){
         try{
-            JobStatus status = ServerDispatcher.seawulfStatus(slurmId);
+            JobStatus status = ServerDispatcher.seawulfStatus(slurmId, jobId);
             return status;
         }catch (IOException e){
             System.out.println(e);

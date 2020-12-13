@@ -1,5 +1,6 @@
 package com.example.demo.Handlers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +24,9 @@ import com.example.demo.ServerDispatcher;
 import com.example.demo.EnumClasses.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.WrapperClasses.JobParams;
+import com.example.demo.WrapperClasses.JobThread;
 import com.example.demo.WrapperClasses.PathBuilder;
+import com.example.demo.WrapperClasses.StatusThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,6 +51,9 @@ public class JobHandler {
         for(Job j : jobs){
             initJobDistrictings(j);
         }
+        StatusThread st = new StatusThread(this);
+        Thread t = new Thread(st);
+        t.start();
     }
 
     public Job getJob(int jobId) {
@@ -78,17 +84,9 @@ public class JobHandler {
         Job j = new Job(sh.getState(params.state), params.plans, params.pop, params.comp, params.group);
         j = jobRepo.save(j);
         jobs.add(j);
-        try{
-            int slurmId = ServerDispatcher.initiateJob(j);
-            if(slurmId >= 0){
-                j.setSlurmId(slurmId);
-                jobRepo.save(j);
-            }
-        }catch(Exception e){
-            System.out.println("Job could not be queue'd");
-            //Set the job to aborted??
-        }
-        
+        JobThread jt = new JobThread(j,this.jobRepo);
+        Thread t = new Thread(jt);
+        t.start();
         return j.getJobId();
     }
 
@@ -97,15 +95,6 @@ public class JobHandler {
         if (job != null) {
             job.setStatus(status);
             jobRepo.save(job);
-        }
-    }
-
-    //FOR TESTING ONLY
-    public void updateStatus(Job job, JobStatus status) {
-        if (job != null) {
-            job.setStatus(status);
-            saveJob(job);
-            jobs.add(job);
         }
     }
 
@@ -244,7 +233,10 @@ public class JobHandler {
     }
 
     public List<Districting> initJobDistrictings(Job j){
-        JSONArray jobJSON = SeawulfHelper.getDistrictings(j.getJobId());
+        JSONArray jobJSON = null;
+        if(j.getStatus() == JobStatus.COMPLETED){
+            jobJSON = SeawulfHelper.getDistrictings(j);
+        }
         if(jobJSON == null)
             return new ArrayList<Districting>();
         List<Districting> districtings = createDistrictings(jobJSON, j.getState());
@@ -272,17 +264,32 @@ public class JobHandler {
         return districting.getDistrictingId();
     }
 
-    //TODO: check every few minutes
-    private void checkCompleteJobs(){
+
+    public void checkCompleteJobs(){
         for(Job j : jobs){
+            System.out.println("Job: " +j.getJobId() + " , Slurm: "+ j.getSlurmId());
             if(j.getStatus() == JobStatus.QUEUED){
-                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
+                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId());
+                if (status == null){
+                    continue;
+                }
                 if(status != JobStatus.QUEUED){
                     updateStatus(j.getJobId(), status);
                 }
             }
             else if(j.getStatus() == JobStatus.INPROGRESS){
-                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId());
+                JobStatus status = JobStatus.INPROGRESS;
+                if(j.getSlurmId() == 0){
+                    File f = new File(PathBuilder.getJobPath(j.getJobId()));
+                    if(f.exists()){
+                        status = JobStatus.COMPLETED;
+                    }
+                }else{
+                    status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId());
+                    if (status == null){
+                        continue;
+                    }
+                }
                 if(status != JobStatus.INPROGRESS){
                     updateStatus(j.getJobId(), status);
                 }

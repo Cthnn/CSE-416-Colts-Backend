@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Districting {
-    private int districtingId;
+    private Integer districtingId;
     private DistrictingType type;
 
     private Set<District> districts;
@@ -36,10 +36,10 @@ public class Districting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "districting_id")
-    public int getDistrictingId(){
+    public Integer getDistrictingId(){
         return districtingId;
     }
-    public void setDistrictingId(int districtingId){
+    public void setDistrictingId(Integer districtingId){
         this.districtingId = districtingId;
     }
 

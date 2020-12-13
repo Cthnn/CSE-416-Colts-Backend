@@ -1,0 +1,1 @@
+sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'cd ./CSE416/Colts/Jobs/133;[ -f ./results.json ] && echo "true" || echo "false"'

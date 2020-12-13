@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class District {
 
-    private int districtId;
+    private Integer districtId;
     private int districtingId;
     private int displayNumber;
     private int index;
@@ -34,10 +34,10 @@ public class District {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int getDistrictId(){
+    public Integer getDistrictId(){
         return districtId;
     }
-    public void setDistrictId(int districtId){
+    public void setDistrictId(Integer districtId){
         this.districtId = districtId;
     }
     
