@@ -284,7 +284,7 @@ public class JobHandler {
         for(Job j : jobs){
             System.out.println("Job: " +j.getJobId() + " , Slurm: "+ j.getSlurmId());
             if(j.getStatus() == JobStatus.QUEUED){
-                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId());
+                JobStatus status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId(),JobStatus.QUEUED);
                 if (status == null){
                     continue;
                 }
@@ -300,7 +300,7 @@ public class JobHandler {
                         status = JobStatus.COMPLETED;
                     }
                 }else{
-                    status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId());
+                    status = SeawulfHelper.getStatus(j.getSlurmId(),j.getJobId(),JobStatus.INPROGRESS);
                     if (status == null){
                         continue;
                     }

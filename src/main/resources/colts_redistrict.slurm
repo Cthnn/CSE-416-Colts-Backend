@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name=colts_batch146
-#SBATCH --output=146.log
+#SBATCH --job-name=colts_batch147
+#SBATCH --output=147.log
 #SBATCH --ntasks-per-node=40
 #SBATCH --nodes=2
 #SBATCH --time=96:00:00
@@ -12,4 +12,4 @@
 module load anaconda/3 
 module load mpi4py
 
-mpirun -np 101 --oversubscribe python /gpfs/projects/CSE416/Colts/algo.py 25 1000000 100 0.75 0.03 /gpfs/home/etcheung/CSE416/Colts/data/Florida_Input.json /gpfs/home/etcheung/CSE416/Colts/Jobs/146/results.json
+mpirun -np 101 --oversubscribe python /gpfs/projects/CSE416/Colts/algo.py 11 1000000 100 0.75 0.03 /gpfs/home/etcheung/CSE416/Colts/data/Virginia_Input.json /gpfs/home/etcheung/CSE416/Colts/Jobs/147/results.json

@@ -106,7 +106,8 @@ public class MainController {
     @GetMapping("/test")
     public void test() {
         try {
-            ServerDispatcher.seawulfStatus(415418,134);
+            Boolean test = ServerDispatcher.canSSH();
+            //ServerDispatcher.seawulfStatus(415418,134);
             // // ServerDispatcher.cancelJob(412228);
             // ServerDispatcher.retrieveResults(2);
             // System.out.println("Successful Retrieval");

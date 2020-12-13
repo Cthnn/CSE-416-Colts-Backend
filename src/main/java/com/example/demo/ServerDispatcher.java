@@ -58,7 +58,10 @@ public class ServerDispatcher {
         }
     }
 
-    public static JobStatus seawulfStatus(int slurmId,int jobId)throws IOException{
+    public static JobStatus seawulfStatus(int slurmId,int jobId,JobStatus js)throws IOException{
+        if (!ServerDispatcher.canSSH()){
+            return js;
+        }
         String filename = "src/main/resources/status.sh";
         String text = "sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh;module load slurm;scontrol show job "+slurmId+"'";
         ServerDispatcher.editFile(filename,text);
@@ -122,5 +125,18 @@ public class ServerDispatcher {
         myWriter.write(text);
         myWriter.close();
 
+    }
+    public static Boolean canSSH()throws IOException{
+        System.out.println("Testing SSH");
+        String sshText = "sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'echo \"true\"'";
+        String fn = "src/main/resources/ssh_test.sh";
+        ServerDispatcher.editFile(fn,sshText);
+        String res = ServerDispatcher.runScript(fn);
+        System.out.println(res);
+        if(res.equals("")){
+            return false;
+        }else{
+            return Boolean.parseBoolean(res);
+        }
     }
 }
