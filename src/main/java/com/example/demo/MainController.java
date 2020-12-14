@@ -73,9 +73,9 @@ public class MainController {
     public BoxPlotData getBoxPlot(@RequestBody int jobId) {
         System.out.println("BOXPLOT FOR " + jobId);
         BoxPlotData out= jh.getBoxPlotData(jobId);
-        for(int i =0; i < out.summaryData.length; i++){
-            System.out.println(Arrays.toString(out.summaryData[i]));
-        }
+        // for(int i =0; i < out.summaryData.length; i++){
+        //     System.out.println(Arrays.toString(out.summaryData[i]));
+        // }
         return out;
     }
 

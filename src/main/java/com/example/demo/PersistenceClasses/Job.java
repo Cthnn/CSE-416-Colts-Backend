@@ -32,6 +32,7 @@ public class Job {
     private List<Districting> districtings;
 
     private double[][] vapMatrix;
+    private double[][] vapMatrixTranspose;
     private double[][] boxPlotValues;
     private Districting averageDistricting;
     private Districting extremeDistricting;
@@ -233,6 +234,12 @@ public class Job {
 
     @JsonIgnore
     @Transient
+    public double[][] getVapMatrixTranspose() {
+        return vapMatrixTranspose;
+    }
+
+    @JsonIgnore
+    @Transient
     private double[] getMatrixColumn(double[][] matrix, int col){
         double[] vaps = new double[matrix.length];
 
@@ -257,12 +264,34 @@ public class Job {
         return output;
     }
 
+    private double[][] generateBoxPlotData(EthnicGroup eg){
+        int numDistricts = state.getNumDistricts();
+        System.out.println("NUMDISTRICT " + numDistricts);
+        double[][] vapMatrix = getVapMatrix(eg);
+        double[][] output = new double[numDistricts][5];
+
+        for(int i=0; i < output.length;i++){
+            double[] vaps = getMatrixColumn(vapMatrix, i);
+            output[i] = vaps;
+        }
+
+        return output;
+    }
+
     @Transient
     @JsonIgnore
     public double[][] getBoxPlotValues(){
         if(boxPlotValues == null)
             boxPlotValues = generateBoxPlot(ethnicGroup);
         return boxPlotValues;
+    }
+
+    @Transient
+    @JsonIgnore
+    public double[][] getBoxPlotData(){
+        if(vapMatrixTranspose == null)
+            vapMatrixTranspose = generateBoxPlotData(ethnicGroup);
+        return vapMatrixTranspose;
     }
 
 }

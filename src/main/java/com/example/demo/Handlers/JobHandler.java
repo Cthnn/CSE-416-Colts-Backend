@@ -121,12 +121,11 @@ public class JobHandler {
 	public BoxPlotData getBoxPlotData(int jobId) {
         Job job = getJob(jobId);
         if(job != null){
-            BoxPlotData output = new BoxPlotData();
-            output.summaryData = job.getBoxPlotValues();
-            output.enactedData = job.getState().getDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
-            output.averageData = job.getAverageDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
-            output.extremeData = job.getExtremeDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
-            return output;
+            double[][] summaryData = job.getBoxPlotData();
+            double[] enactedData = job.getState().getDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            double[] averageData = job.getAverageDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            double[] extremeData = job.getExtremeDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            return new BoxPlotData(summaryData, enactedData, averageData, extremeData);
         }
             
 		return null;
