@@ -123,8 +123,11 @@ public class JobHandler {
         if(job != null){
             double[][] summaryData = job.getBoxPlotData();
             double[] enactedData = job.getState().getDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            System.out.println("Average Data");
             double[] averageData = job.getAverageDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            System.out.println("Xtreme Data");
             double[] extremeData = job.getExtremeDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
+            System.out.println(Arrays.toString(averageData));
             return new BoxPlotData(summaryData, enactedData, averageData, extremeData);
         }
             
@@ -178,7 +181,7 @@ public class JobHandler {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(districtingFile.toFile(), dist);
             StateName state = job.getState().getStateName();
-            ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getPythonScript(), "" + job.getJobId(),
+            ProcessBuilder builder = new ProcessBuilder("python", PathBuilder.getPythonScript(), "" + job.getJobId(),
                 state.toString(), PathBuilder.getPrecinctPath(state), districtingFile.toString(), fileOutput);
             builder.redirectErrorStream(true);
             
@@ -195,7 +198,7 @@ public class JobHandler {
         try {
             String state = job.getState().getStateName().toString();
             String eg = job.getEthnicGroup().toString();
-            ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getSummaryScript(), ""+job.getJobId(),
+            ProcessBuilder builder = new ProcessBuilder("python", PathBuilder.getSummaryScript(), ""+job.getJobId(),
                 state.toString(), ""+job.getCompactness(), ""+job.getPopulationDeviation(), eg, 
                 ""+job.getAverageDistrictingIndex(), ""+job.getExtremeDistrictingIndex(), fileOutput);
     

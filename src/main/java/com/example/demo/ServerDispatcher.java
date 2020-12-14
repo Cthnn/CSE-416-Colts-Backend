@@ -28,7 +28,7 @@ public class ServerDispatcher {
             String state = j.getState().getStateName().name().toLowerCase();
             String capState = state.substring(0,1).toUpperCase() + state.substring(1);
             String fn = "src/main/resources/colts_redistrict.slurm";
-            String txt = "#!/usr/bin/env bash\n\n#SBATCH --job-name=colts_batch"+j.getJobId()+"\n#SBATCH --output="+j.getJobId()+".log\n#SBATCH --ntasks-per-node=40\n#SBATCH --nodes=2\n#SBATCH --time=96:00:00\n#SBATCH -p extended-40core\n#SBATCH --mail-type=BEGIN,END\n#SBATCH --mail-user=ethan.cheung@stonybrook.edu\n\nmodule load anaconda/3 \nmodule load mpi4py\n\nmpirun -np "+(j.getPlans()+1)+" --oversubscribe python /gpfs/projects/CSE416/Colts/algo.py "+j.getState().getNumDistricts()+" 1000000 "+ j.getPlans() + " "+ j.getCompactness()+" "+j.getPopulationDeviation()+" /gpfs/home/etcheung/CSE416/Colts/data/"+capState+"_Input.json /gpfs/home/etcheung/CSE416/Colts/Jobs/"+j.getJobId()+"/results.json";
+            String txt = "#!/usr/bin/env bash\n\n#SBATCH --job-name=colts_batch"+j.getJobId()+"\n#SBATCH --output="+j.getJobId()+".log\n#SBATCH --ntasks-per-node=40\n#SBATCH --nodes=2\n#SBATCH --time=96:00:00\n#SBATCH -p extended-40core\n#SBATCH --mail-type=BEGIN,END\n#SBATCH --mail-user=ethan.cheung@stonybrook.edu\n\nmodule load anaconda/3 \nmodule load mpi4py\n\nmpirun -np 300 --oversubscribe python /gpfs/projects/CSE416/Colts/algo.py "+j.getState().getNumDistricts()+" 1000000 "+ j.getPlans() + " "+ j.getCompactness()+" "+j.getPopulationDeviation()+" /gpfs/home/etcheung/CSE416/Colts/data/"+capState+"_Input.json /gpfs/home/etcheung/CSE416/Colts/Jobs/"+j.getJobId()+"/results.json";
             ServerDispatcher.editFile(fn, txt);
             fn = "src/main/resources/trigger.sh";
             txt = "sudo scp -i ./src/main/resources/cthan_key ./src/main/resources/colts_redistrict.slurm etcheung@login.seawulf.stonybrook.edu:/gpfs/projects/CSE416/Colts\nsudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh;module load slurm; cd /gpfs/home/etcheung/CSE416/Colts/Jobs;mkdir "+j.getJobId()+";cd /gpfs/projects/CSE416/Colts;sbatch colts_redistrict.slurm'";
@@ -47,7 +47,7 @@ public class ServerDispatcher {
     }
     private static void initiateJobLocally(AlgorithmInputs inputs){
         try {
-            ProcessBuilder builder = new ProcessBuilder("py", PathBuilder.getAlgorithmScript(), 
+            ProcessBuilder builder = new ProcessBuilder("python", PathBuilder.getAlgorithmScript(), 
             inputs.targetDistricts, inputs.maxIterations, inputs.plans, inputs.compactness, inputs.populationDeviation, 
             inputs.inputFile, inputs.outputFile);
             builder.redirectErrorStream(true);
@@ -98,6 +98,9 @@ public class ServerDispatcher {
         String text = "sudo ssh -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu 'cd /gpfs/home/etcheung/CSE416/Colts/Jobs;rm -r "+jobId+"'";
         ServerDispatcher.editFile(filename,text);
         ServerDispatcher.runScript(filename);
+        ServerDispatcher.deleteLocalFile("src/main/resources/jobs/"+jobId+"_districtings.json");
+        ServerDispatcher.deleteLocalFile("src/main/resources/job_districts/"+jobId+"_extreme.json");
+        ServerDispatcher.deleteLocalFile("src/main/resources/job_districts/"+jobId+"_average.json");
     }
     public static void retrieveResults(int jobId)throws IOException{
         String filename = "src/main/resources/retrieveResults.sh";
@@ -137,6 +140,12 @@ public class ServerDispatcher {
             return false;
         }else{
             return Boolean.parseBoolean(res);
+        }
+    }
+    private static void deleteLocalFile(String fn){
+        File f = new File(fn);
+        if(f.exists()){
+            f.delete();
         }
     }
 }

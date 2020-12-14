@@ -18,12 +18,12 @@ public class DeleteThread implements Runnable {
     }
 
     public void run() {
-        jobrepo.delete(j);
         try{
             ServerDispatcher.cancelJob(j.getSlurmId());
             SeawulfHelper.removeFiles(j.getJobId());
         }catch(Exception e){
             System.out.println("ERROR: did not cancel job. Job does not exist with id: " + j.getJobId());
         }
+        jobrepo.delete(j);
     }
 }
