@@ -18,7 +18,7 @@ public class StatusThread implements Runnable {
             try {
                 jh.checkCompleteJobs();
                 System.out.println("Finished Checking Status. Sleeping");
-                Thread.sleep((5 * 60000));
+                Thread.sleep((60000));
             } catch (InterruptedException e) {
                 System.out.println("Check Status Interrupted");
             } catch (ConcurrentModificationException e) {

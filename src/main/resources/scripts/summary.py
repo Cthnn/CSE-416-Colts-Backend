@@ -112,7 +112,7 @@ outputFileName = sys.argv[8]
 print(sys.argv)
 
 compDic = {"0.75": "Slightly Compact", "0.5": "Moderately Compact", "0.25": "Very Compact"}
-stateDic = {"Alabama": "AL", "Florida": "FL", "VIRGINIA": "VA"}
+stateDic = {"Alabama": "AL", "Florida": "FL", "Virginia": "VA"}
 minorityDic = {"WHITE": "White American", "BLACK": "African American", "NATIVE_AMERICAN": "Native American and Alaska Native", "ASIAN": "Asian", "PACIFIC_ISLANDER": "Native Hawaiian and Other Pacific Islander", "OTHER": "Other", "HISPANIC": "Hispanic or Latino"}
 constraints = {"compactnessLimit": compDic[compactness], "populationDifferenceLimit": populationDeviation, "minorityGroups": [minorityDic[minorityGroup]]}
 

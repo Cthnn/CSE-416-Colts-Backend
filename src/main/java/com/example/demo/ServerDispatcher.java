@@ -13,7 +13,7 @@ import com.example.demo.Repositories.JobRepository;
 public class ServerDispatcher {
     private static int thresh = 20;
     private static Map<String,JobStatus> statusMapping= Map.ofEntries(Map.entry("BOOT_FAIL",JobStatus.ABORTED),
-        Map.entry("CANCELLED",JobStatus.CANCELLED),Map.entry("COMPLETED",JobStatus.COMPLETED),Map.entry("CONFIGURING",JobStatus.QUEUED),
+        Map.entry("CANCELLED",JobStatus.ABORTED),Map.entry("COMPLETED",JobStatus.COMPLETED),Map.entry("CONFIGURING",JobStatus.QUEUED),
         Map.entry("COMPLETING",JobStatus.INPROGRESS),Map.entry("DEADLINE",JobStatus.ABORTED),Map.entry("FAILED",JobStatus.ABORTED),
         Map.entry("NODE_FAIL",JobStatus.ABORTED),Map.entry("OUT_OF_MEMORY",JobStatus.ABORTED),Map.entry("PENDING",JobStatus.QUEUED),
         Map.entry("PREEMPTED",JobStatus.ABORTED),Map.entry("RUNNING",JobStatus.INPROGRESS),Map.entry("RESV_DEL_HOLD",JobStatus.INPROGRESS),

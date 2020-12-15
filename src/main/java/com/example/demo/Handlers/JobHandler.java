@@ -123,9 +123,7 @@ public class JobHandler {
         if(job != null){
             double[][] summaryData = job.getBoxPlotData();
             double[] enactedData = job.getState().getDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
-            System.out.println("Average Data");
             double[] averageData = job.getAverageDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
-            System.out.println("Xtreme Data");
             double[] extremeData = job.getExtremeDistricting().getDistrictVAPPercentages(job.getEthnicGroup());
             System.out.println(Arrays.toString(averageData));
             return new BoxPlotData(summaryData, enactedData, averageData, extremeData);

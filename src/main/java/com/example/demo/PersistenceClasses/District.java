@@ -87,9 +87,6 @@ public class District {
             totalPop += p.getDemographic().getVapPopulation();
             egPop += p.getDemographic().getVapPopulations().get(eg);
         }
-        System.out.println(egPop);
-        System.out.println(totalPop);
-        System.out.println(eg.toString());
         return ((double)egPop)/totalPop;
     }
     
