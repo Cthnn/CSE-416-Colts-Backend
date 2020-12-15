@@ -208,7 +208,7 @@ public class Job {
     private double districtingVapDifference(double[] vap1, double[] vap2){
         double sum = 0;
         for(int i = 0; i < vap1.length; i++){
-            sum += (vap1[i] - vap2[i]);
+            sum += Math.pow(vap1[i] - vap2[i], 2);
         }
 
         return sum/vap1.length;
