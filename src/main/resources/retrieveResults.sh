@@ -1,1 +1,1 @@
-sudo scp -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu:/gpfs/home/etcheung/CSE416/Colts/Jobs/123/results.json ./src/main/resources/jobs/123_districtings.json
+sudo scp -i ./src/main/resources/cthan_key etcheung@login.seawulf.stonybrook.edu:/gpfs/home/etcheung/CSE416/Colts/Jobs/125/results.json ./src/main/resources/jobs/125_districtings.json
